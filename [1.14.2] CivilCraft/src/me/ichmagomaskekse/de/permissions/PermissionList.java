@@ -1,6 +1,7 @@
 package me.ichmagomaskekse.de.permissions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class PermissionList {
 	
@@ -32,10 +33,15 @@ public class PermissionList {
 		return "UNKNOWN PERMISSION";
 	}
 	
-	public HashMap<String, String> getPermissions() {
+	
+	public static HashMap<String, String> getPermissions() {
+		HashMap<String, String> perms = new HashMap<String, String>();
+		
 		for(CommandPermission c : permissions) {
-			
+			perms.put(c.cmd, c.perm);
 		}
+		
+		return perms;
 	}
 	
 	private static class CommandPermission {

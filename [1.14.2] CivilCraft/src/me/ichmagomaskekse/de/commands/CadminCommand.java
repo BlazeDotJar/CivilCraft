@@ -1,5 +1,7 @@
 package me.ichmagomaskekse.de.commands;
 
+import java.util.HashMap;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -26,7 +28,11 @@ public class CadminCommand implements CommandExecutor {
 							CivilCraft.sendInfo(p, "", "Daten wurden neu geladen!");
 						}
 					}else if(args[0].equals("perms")) {
-						PermissionList.
+						p.sendMessage("§6CivilCraft Permissions:");
+						HashMap<String, String> perms = PermissionList.getPermissions();
+						for(String c : perms.keySet()) {
+							p.sendMessage(c+" §a"+perms.get(c));
+						}
 					}
 				}
 			}
