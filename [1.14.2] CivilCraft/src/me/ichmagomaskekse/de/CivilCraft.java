@@ -8,6 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import me.ichmagomaskekse.de.commands.CadminCommand;
 import me.ichmagomaskekse.de.filesystem.FileManager;
+import me.ichmagomaskekse.de.listener.ChatListener;
 import me.ichmagomaskekse.de.listener.ServerJoinAndLeaveListener;
 import me.ichmagomaskekse.de.permissions.PermissionList;
 
@@ -50,12 +51,11 @@ public class CivilCraft extends JavaPlugin {
 	}
 	public void postInit() {
 		new ServerJoinAndLeaveListener();
+		new ChatListener();
 		
 		getCommand("cadmin").setExecutor(new CadminCommand());
 		
 		PermissionList.addPermission("cadmin", "civilcraft.cadmin");
-		PermissionList.addPermission("cadmin reload", "civilcraft.cadmin.reload");
-		PermissionList.addPermission("cadmin permissions", "civilcraft.cadmin.permissions");
 	}
 	
 	//Registriert die Events bei Bukkit
