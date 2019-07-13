@@ -11,6 +11,8 @@ import me.ichmagomaskekse.de.filesystem.FileManager;
 import me.ichmagomaskekse.de.listener.ChatListener;
 import me.ichmagomaskekse.de.listener.ServerJoinAndLeaveListener;
 import me.ichmagomaskekse.de.permissions.PermissionList;
+import me.ichmagomaskekse.de.permissions.PermissionManager;
+import me.ichmagomaskekse.de.permissions.PermissionManager.PermGroup;
 
 public class CivilCraft extends JavaPlugin {
 	
@@ -22,6 +24,7 @@ public class CivilCraft extends JavaPlugin {
 	
 	//Instanzen: Manager, Handler, etc
 	public FileManager filemanager = null;
+	public PermissionManager permissionmanager = null;
 	
 	public static Lobby mainLobby = new Lobby(1);
 	
@@ -30,7 +33,6 @@ public class CivilCraft extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		ccraft = this;
-		saveDefaultConfig(); // config.yml wird in den Plugins Ordner gespeichert
 		preInit();
 		init();
 		postInit();
@@ -44,17 +46,23 @@ public class CivilCraft extends JavaPlugin {
 	}
 	
 	public void preInit() {
-		filemanager = new FileManager(true);
+		//Dateien werden aus dem Resource Ordner in den Plugins Ordner gespeichert
+		saveResource("civilcraft.yml", false);
+		saveResource("permissions.yml", false);
 	}
 	public void init() {
-		
+		filemanager = new FileManager();
+		permissionmanager = new PermissionManager();
 	}
 	public void postInit() {
+		//Events
 		new ServerJoinAndLeaveListener();
 		new ChatListener();
 		
+		//Commands
 		getCommand("cadmin").setExecutor(new CadminCommand());
 		
+		//Permissions
 		PermissionList.addPermission("cadmin", "civilcraft.cadmin");
 		PermissionList.addPermission("cadmin reload", "civilcraft.cadmin.reload");
 		PermissionList.addPermission("cadmin permissions", "civilcraft.cadmin.permissions");

@@ -1,0 +1,56 @@
+#
+# Permission Datei
+# by Team CivilCraft
+#
+# INHERIT:
+# inherit = Erbung
+#  Beispiel:
+#   Gruppe: admin
+#   inherit: player
+#   Dann: Der Admin hat alle Rechte die 'player' Gruppe auch hat.
+#
+# PREFIX & SUFFIX:
+# prefix & suffix = [Prefix][Spielername][Suffix] <Chat-Nachricht>
+#
+# ANTI-PERMISSIONS:
+# Permissions mit einem '-' davor sind sogenannte 'Anti-Permissions'.
+# wenn ein Spieler z.B. die Anti-Permission '- civilcraft.move' hat,
+# kann der Spieler sich nichtmehr bewegen.
+#
+# PLAYER INDEX:
+# Der Player Index beinhaltet den Namen, die UUID, die PermGroup und die Permission des Spielers.
+# Diese werden beim Joinen oder Reloaden des Server dort registriert.
+
+Permissions:
+  # 'Permissions.groups' Beinhaltet alle vorhandenen Permission Gruppen
+  groups:
+   - developer
+   - admin
+   - player
+# Standart Developer Gruppe
+  developer:
+    prefix: '&9Developer'
+    suffix: '&f'
+    permissions:
+     - *
+     - cadmin.*
+    inherit: []
+    
+# Standart Admin Gruppe
+  admin:
+    prefix: '&cAdmin'
+    suffix: '&f'
+    permissions:
+     - Cadmin.*
+    inherit: []
+    
+# Standart Spieler Gruppe
+  player:
+    prefix: ''
+    suffix: ''
+    permissions:
+     - civilcraft.join
+    inherit: []
+
+# Player Index
+Players: []

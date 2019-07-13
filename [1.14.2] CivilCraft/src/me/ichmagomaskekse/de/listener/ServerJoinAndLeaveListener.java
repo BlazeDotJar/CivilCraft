@@ -10,6 +10,7 @@ import org.bukkit.event.server.ServerListPingEvent;
 
 import me.ichmagomaskekse.de.CivilCraft;
 import me.ichmagomaskekse.de.filesystem.FileManager;
+import me.ichmagomaskekse.de.permissions.PermissionManager;
 
 public class ServerJoinAndLeaveListener implements Listener {
 	
@@ -27,6 +28,7 @@ public class ServerJoinAndLeaveListener implements Listener {
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e) {
 		e.setJoinMessage(FileManager.join_message.replace("{USER}", e.getPlayer().getName()));
+		PermissionManager.loadPermPlayer(e.getPlayer());
 	}
 	
 	@EventHandler
@@ -38,6 +40,7 @@ public class ServerJoinAndLeaveListener implements Listener {
 	@EventHandler
 	public void onMOTD(ServerListPingEvent e) {
 		e.setMotd(FileManager.MOTD);
+		e.setMaxPlayers(FileManager.server_slots);
 	}
 	
 }

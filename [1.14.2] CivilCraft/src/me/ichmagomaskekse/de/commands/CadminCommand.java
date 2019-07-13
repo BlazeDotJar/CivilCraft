@@ -28,6 +28,7 @@ public class CadminCommand implements CommandExecutor {
 						CivilCraft.sendInfo(p, "", "Lade Daten neu");
 						if(FileManager.reloadData()) {
 							CivilCraft.sendInfo(p, "", "Daten wurden neu geladen!");
+							sendVariablesFromFileManager(sender);
 						}
 					}else if(args[0].equals("permissions") || args[0].equals("perms")) {
 						if(!PermissionManager.hasPermission(p, "cadmin permissions")) return false;
@@ -49,6 +50,7 @@ public class CadminCommand implements CommandExecutor {
 					CivilCraft.sendInfo(sender, "", "Lade Daten neu");
 					if(FileManager.reloadData()) {
 						CivilCraft.sendInfo(sender, "", "Daten wurden neu geladen!");
+						sendVariablesFromFileManager(sender);
 					}
 				}
 			}
@@ -60,7 +62,17 @@ public class CadminCommand implements CommandExecutor {
 	public void sendCadminInfo(CommandSender sender) {
 		sender.sendMessage("§f/cadmin §aHauptbefehl für "+FileManager.server_prefix);
 		sender.sendMessage("§f/cadmin reload §aLade alle Daten neu");
-		
+	}
+	public void sendVariablesFromFileManager(CommandSender sender) {
+		//Zusammenfassung, was neu geladen wurde
+		sender.sendMessage("Neu geladen wurde:");
+		sender.sendMessage("lobby_max_slots: "+FileManager.lobby_max_slots);
+		sender.sendMessage("lobby_amount: "+FileManager.lobby_amount);
+		sender.sendMessage("MOTD: "+FileManager.MOTD);
+		sender.sendMessage("join_message: "+FileManager.join_message);
+		sender.sendMessage("leave_message: "+FileManager.leave_message);
+		sender.sendMessage("server_slots: "+FileManager.server_slots);
+		sender.sendMessage("server_prefix: "+FileManager.server_prefix);
 	}
 	
 }
