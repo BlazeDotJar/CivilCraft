@@ -1,0 +1,7 @@
+name: CivilCraft
+version: 1.0
+author: IchMagOmasKekse
+main: me.ichmagomaskekse.de.CivilCraft
+commands:
+  cadmin:
+    description: 'CivilCraft admin command'
