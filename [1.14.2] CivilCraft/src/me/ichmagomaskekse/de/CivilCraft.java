@@ -14,7 +14,7 @@ import me.ichmagomaskekse.de.permissions.PermissionList;
 public class CivilCraft extends JavaPlugin {
 	
 	/*
-	 *  Dies ist die Lobby Klasse
+	 *  Dies ist die Lobby Klasse hallo
 	 */
 	private static CivilCraft ccraft = null;
 	public static CivilCraft getInstance() { return ccraft; }
