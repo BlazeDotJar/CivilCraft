@@ -25,6 +25,8 @@ public class CadminCommand implements CommandExecutor {
 						if(FileManager.reloadData()) {
 							CivilCraft.sendInfo(p, "", "Daten wurden neu geladen!");
 						}
+					}else if(args[0].equals("perms")) {
+						PermissionList.
 					}
 				}
 			}

@@ -32,6 +32,12 @@ public class PermissionList {
 		return "UNKNOWN PERMISSION";
 	}
 	
+	public HashMap<String, String> getPermissions() {
+		for(CommandPermission c : permissions) {
+			
+		}
+	}
+	
 	private static class CommandPermission {
 		
 		String cmd, perm;
