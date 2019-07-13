@@ -23,15 +23,18 @@ public class CadminCommand implements CommandExecutor {
 					sendCadminInfo(p);					
 				}else if(args.length == 1) {
 					if(args[0].equals("reload")) {
+						if(!p.hasPermission(PermissionList.getPermission("cadmin reload"))) return false;
 						CivilCraft.sendInfo(p, "", "Lade Daten neu");
 						if(FileManager.reloadData()) {
 							CivilCraft.sendInfo(p, "", "Daten wurden neu geladen!");
 						}
-					}else if(args[0].equals("perms")) {
+					}else if(args[0].equals("permissions") || args[0].equals("perms")) {
+						if(!p.hasPermission(PermissionList.getPermission("cadmin permissions"))) return false;
+						p.sendMessage("");
 						p.sendMessage("§6CivilCraft Permissions:");
 						HashMap<String, String> perms = PermissionList.getPermissions();
 						for(String c : perms.keySet()) {
-							p.sendMessage(c+" §a"+perms.get(c));
+							p.sendMessage(" - "+c+" §a"+perms.get(c));
 						}
 					}
 				}
@@ -56,6 +59,7 @@ public class CadminCommand implements CommandExecutor {
 	public void sendCadminInfo(CommandSender sender) {
 		sender.sendMessage("§f/cadmin §aHauptbefehl für "+FileManager.server_prefix);
 		sender.sendMessage("§f/cadmin reload §aLade alle Daten neu");
+		sender.sendMessage("§f/cadmin permissions §aLade alle Daten neu");
 		
 	}
 	

@@ -54,6 +54,8 @@ public class CivilCraft extends JavaPlugin {
 		getCommand("cadmin").setExecutor(new CadminCommand());
 		
 		PermissionList.addPermission("cadmin", "civilcraft.cadmin");
+		PermissionList.addPermission("cadmin reload", "civilcraft.cadmin.reload");
+		PermissionList.addPermission("cadmin permissions", "civilcraft.cadmin.permissions");
 	}
 	
 	//Registriert die Events bei Bukkit
