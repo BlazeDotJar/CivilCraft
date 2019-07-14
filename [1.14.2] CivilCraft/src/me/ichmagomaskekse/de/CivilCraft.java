@@ -12,7 +12,6 @@ import me.ichmagomaskekse.de.listener.ChatListener;
 import me.ichmagomaskekse.de.listener.ServerJoinAndLeaveListener;
 import me.ichmagomaskekse.de.permissions.PermissionList;
 import me.ichmagomaskekse.de.permissions.PermissionManager;
-import me.ichmagomaskekse.de.permissions.PermissionManager.PermGroup;
 
 public class CivilCraft extends JavaPlugin {
 	
@@ -49,6 +48,7 @@ public class CivilCraft extends JavaPlugin {
 		//Dateien werden aus dem Resource Ordner in den Plugins Ordner gespeichert
 		saveResource("civilcraft.yml", false);
 		saveResource("permissions.yml", false);
+		saveResource("players.yml", false);
 	}
 	public void init() {
 		filemanager = new FileManager();

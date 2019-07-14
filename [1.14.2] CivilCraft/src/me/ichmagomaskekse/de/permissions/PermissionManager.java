@@ -16,8 +16,11 @@ import me.ichmagomaskekse.de.CivilCraft;
 public class PermissionManager {
 	
 	private static String permission_path = "plugins/CivilCraft/permissions.yml";
+	private static String index_path = "plugins/CivilCraft/players.yml";
 	private static File permission_file = null;
+	private static File index_file = null;
 	private static FileConfiguration cfg = null;
+	private static FileConfiguration index = null;
 	private static ArrayList<String> registered_group_names = new ArrayList<String>();
 	
 	/*                     String = Groupname */
@@ -28,12 +31,14 @@ public class PermissionManager {
 	
 	public PermissionManager() {
 		permission_file = new File(PermissionManager.permission_path);
+		index_file = new File(PermissionManager.index_path);
 		cfg = YamlConfiguration.loadConfiguration(PermissionManager.permission_file);
+		index = YamlConfiguration.loadConfiguration(PermissionManager.index_file);
 		loadGroupNames();
 		loadGroups();
 		loadGroupInherits();
+		loadPermPlayers();
 	}
-	
 	
 	
 	//Prozess: Gruppen werden geladen
@@ -56,12 +61,12 @@ public class PermissionManager {
 	
 	public void loadPermPlayers() {
 		for(Player p : Bukkit.getOnlinePlayers()) {
-			permPlayers.put(p.getUniqueId(), new PermPlayer(p.getName()));
+			permPlayers.put(p.getUniqueId(), new PermPlayer(p.getUniqueId()));
 		}
 	}
 	//Ladet die PermPlayer Daten
-	public static void loadPermPlayer(Player player) {
-		permPlayers.put(player.getUniqueId(), new PermPlayer(player.getName()));
+	public static void loadPermPlayer(Player p) {
+		permPlayers.put(p.getUniqueId(), new PermPlayer(p.getUniqueId()));
 	}
 	
 	public static boolean hasPermission(Player p, String command) {
@@ -72,84 +77,41 @@ public class PermissionManager {
 	public static class PermPlayer {
 		//TODO:
 		public UUID uuid = null;
-		public String playername = "";
 		public ArrayList<PermGroup> inherit = new ArrayList<PermGroup>();
-		public PermGroup permGroup = null;		
+		public ArrayList<PermGroup> groups = new ArrayList<PermGroup>();
+		public ArrayList<String> permissions = new ArrayList<String>();
 		public PermPlayer(UUID uuid) {
 			this.uuid = uuid;
-			try{
-				this.playername = PermissionManager.cfg.getString("Players."+uuid.toString());
-			}catch(Exception ex) {
-				if(this.uuid == null || this.playername == null) registerPlayer(playername);
-			}
 			loadData();
 		}
-		public PermPlayer(String playername) {
-			this.playername = playername;
-			try{
-				this.uuid = UUID.fromString(PermissionManager.cfg.getString("Players."+playername));
-			}catch(Exception ex) {
-				if(this.uuid == null || this.playername == null) registerPlayer(playername);
-			}
-			loadData();
-		}
+
 		
 		//Ein Spieler wird in den Player Index eingetragen
 		public void registerPlayer(UUID uuid) {
-			FileConfiguration c = PermissionManager.cfg;
-			for(Player p : Bukkit.getOnlinePlayers()) {
-				if(p.getUniqueId().toString().equals(uuid.toString())) {
-					c.set("Players."+uuid.toString(), p.getName());
-					c.set("Players."+p.getName(), uuid.toString());
-					this.playername = p.getName();
-					this.uuid = p.getUniqueId();
-					break;
-				}
-			}
-			ArrayList<String> groups = new ArrayList<String>();
-			groups.add("none");
-			c.set("Players.groups", groups);
+			FileConfiguration index = YamlConfiguration.loadConfiguration(new File("plugins/CivilCraft/players.yml"));
 			
-			ArrayList<String> perms = new ArrayList<String>();
-			perms.add("none");
-			c.set("Players.permissions", perms);
+			ArrayList<String> list = new ArrayList<String>();
+			list.add("player");
+			index.set("Players."+uuid.toString()+".groups", list);
+			list.clear();
+			index.set("Players."+uuid.toString()+".permissions", list);
 			try {
-				c.save(PermissionManager.permission_file);
-				CivilCraft.sendBroadcast("PermPlayer", "Registered!");
-			} catch (IOException e) {
-				CivilCraft.sendErrorInfo(Bukkit.getConsoleSender(), "PermPlayer", "Der Spieler '"+playername+"' konnte nicht registriert werden.");
-				e.printStackTrace();
-			}
+				index.save(new File("plugins/CivilCraft/players.yml"));
+			} catch (IOException e) {e.printStackTrace();}
 		}
-		public void registerPlayer(String playername) {
-			FileConfiguration c = PermissionManager.cfg;
-			for(Player p : Bukkit.getOnlinePlayers()) {
-				if(p.getName().equals(playername)) {
-					c.set("Players."+p.getUniqueId().toString(), p.getName());
-					c.set("Players."+p.getName(), p.getUniqueId().toString());
-					this.playername = p.getName();
-					this.uuid = p.getUniqueId();
-					break;
-				}
-			}
-			ArrayList<String> groups = new ArrayList<String>();
-			groups.add("player");
-			c.set("Players.groups", groups);
-			
-			ArrayList<String> perms = new ArrayList<String>();
-			perms.add("none");
-			c.set("Players.permissions", perms);
-			try {
-				c.save(PermissionManager.permission_file);
-				CivilCraft.sendBroadcast("PermPlayer", "Registered!");
-			} catch (IOException e) {
-				CivilCraft.sendErrorInfo(Bukkit.getConsoleSender(), "PermPlayer", "Der Spieler '"+playername+"' konnte nicht registriert werden.");
-				e.printStackTrace();
-			}
-		}
-		
+
 		public void loadData() {
-			this.permGroup = new PermGroup(PermissionManager.cfg.getString("Players.group"));
+			if(PermissionManager.index.getStringList("Players."+this.uuid.toString()+".groups") == null)
+				registerPlayer(this.uuid);
+			groups.clear();
+			for(String s : PermissionManager.index.getStringList("Players."+this.uuid.toString()+".groups")) {
+				if(s == null) break;
+				else groups.add(new PermGroup(s));
+			}
+			for(String s : PermissionManager.index.getStringList("Players."+this.uuid.toString()+".permissions")) {
+				if(s == null) break;
+				else permissions.add(s);
+			}
 		}
 	}
 	
