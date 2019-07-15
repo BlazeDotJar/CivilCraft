@@ -87,6 +87,13 @@ public class PermissionManager {
 		if(bypass == false) CivilCraft.sendInfo(sender, "", "§cDu hast nicht das Recht dazu");
 		return bypass;
 	}
+	public static boolean hasPermission(CommandSender sender, String command, boolean sendError) {
+		//TODO: MUSS GEUPDATET WERDEN; INHERITS PRÜFEN; PLAYER PRÜFEN;
+		boolean bypass = false;
+		bypass = sender.hasPermission(PermissionList.getPermission(command));
+		if(bypass == false && sendError == true) CivilCraft.sendInfo(sender, "", "§cDu hast nicht das Recht dazu");
+		return bypass;
+	}
 	
 	public static PermPlayer getPermPlayer(UUID uuid) {
 		if(permPlayers.containsKey(uuid)) return permPlayers.get(uuid);
@@ -99,15 +106,19 @@ public class PermissionManager {
 	public static class PermPlayer {
 		public UUID uuid = null;
 		public Player player = null;
-		public PermGroup group; //Es kann nur 1ne Gruppe zugeteilt werden, damit es keine Probleme beim Anzeigen des Prefixes gibt
+		public PermGroup group = null; //Es kann nur 1ne Gruppe zugeteilt werden, damit es keine Probleme beim Anzeigen des Prefixes gibt
 		public ArrayList<String> permissions = new ArrayList<String>();
 		private PermissionAttachment attachment = null;
+		public PermissionAttachment getAttachment() {
+			return attachment;
+		}
 		public PermPlayer(UUID uuid) {
 			this.uuid = uuid;
 			initPlayer();
 			registerPlayer(uuid, false);
 			loadData();
 			CivilCraft.sendInfo(Bukkit.getConsoleSender(), "PermPlayer Loading", "§6"+uuid.toString()+" wurde geladen");
+			CivilCraft.sendInfo(Bukkit.getConsoleSender(), "PermPlayer Loading", "§6Gruppe: "+group.groupname);			
 		}
 		
 		public void initPlayer() {
@@ -119,17 +130,19 @@ public class PermissionManager {
 		
 		//Ein Spieler wird in den Player Index eingetragen
 		public void registerPlayer(UUID uuid, boolean overwrite) {
+			PermissionManager.player_data_file = new File(PermissionManager.player_data_path);
 			FileConfiguration player_data_cfg = YamlConfiguration.loadConfiguration(PermissionManager.player_data_file);
 			boolean bypass = false;
 			if(overwrite == false) {
+				if(uuid == null) Bukkit.broadcastMessage("uuid == null");
 				if(player_data_cfg.getString("Players."+uuid.toString()+".group") == null) bypass = true;
 			}
 			if(bypass || overwrite) {				
 				ArrayList<String> list = new ArrayList<String>();
-				player_data_cfg.set("Players."+uuid.toString()+".group", "player");
+				player_data_cfg.set("Players."+uuid.toString()+".group", "admin");
 				player_data_cfg.set("Players."+uuid.toString()+".permissions", list);
 				try {
-					player_data_cfg.save(PermissionManager.player_data_file);
+					player_data_cfg.save(new File(PermissionManager.player_data_path));
 				} catch (IOException e) {e.printStackTrace();}
 			}
 		}
@@ -137,6 +150,7 @@ public class PermissionManager {
 		public boolean loadData() {
 			if(PermissionManager.player_data_cfg.getString("Players."+this.uuid.toString()+".group") == null) registerPlayer(this.uuid, true);
 			
+			CivilCraft.sendErrorInfo(Bukkit.getConsoleSender(), "", "Players."+this.uuid.toString()+".group");
 			String name = PermissionManager.player_data_cfg.getString("Players."+this.uuid.toString()+".group");
 			if(name == null) CivilCraft.sendErrorInfo(Bukkit.getConsoleSender(), "", "name ======== NULL");
 			group = new PermGroup(name);

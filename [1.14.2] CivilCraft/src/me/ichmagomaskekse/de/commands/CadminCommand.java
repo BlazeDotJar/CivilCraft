@@ -16,6 +16,11 @@ public class CadminCommand implements CommandExecutor {
 		
 		if(sender instanceof Player) {
 			Player p = (Player) sender;
+			//DEBUG
+			if(args.length == 1 && args[0].equals("check")) {
+				p.sendMessage(PermissionManager.getPermPlayer(p.getUniqueId()).getAttachment().getPermissions().entrySet().toString());
+			}
+			//DEBUG
 			if(PermissionManager.hasPermission(p, "cadmin")) {
 				if(args.length == 0) {
 					sendCadminInfo(p);					

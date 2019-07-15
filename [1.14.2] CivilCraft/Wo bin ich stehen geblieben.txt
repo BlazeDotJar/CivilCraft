@@ -1,1 +1,1 @@
-Beim cadmin reload werden keine Nachrichten vom PermissionManager gesendet
+Pfad 'Players.UUID.group' wird als NULL ausgelesen, obwohl zu 100% dort etwas drinnen steht
