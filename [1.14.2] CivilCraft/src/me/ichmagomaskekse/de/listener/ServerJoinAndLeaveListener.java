@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.server.ServerListPingEvent;
 
 import me.ichmagomaskekse.de.CivilCraft;
+import me.ichmagomaskekse.de.PlayerAtlas;
 import me.ichmagomaskekse.de.filesystem.FileManager;
 import me.ichmagomaskekse.de.permissions.PermissionManager;
 
@@ -20,6 +21,7 @@ public class ServerJoinAndLeaveListener implements Listener {
 	
 	@EventHandler
 	public void onLogin(PlayerLoginEvent e) {
+		PlayerAtlas.registerPlayer(e.getPlayer());
 		if(CivilCraft.mainLobby.requestJoin(e.getPlayer()) == false) {
 			e.disallow(Result.KICK_OTHER, "§cKeine freie Lobby gefunden!\nVersuche es später erneut");
 		}

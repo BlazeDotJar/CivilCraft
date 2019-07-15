@@ -1,0 +1,1 @@
+Beim cadmin reload werden keine Nachrichten vom PermissionManager gesendet

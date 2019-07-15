@@ -10,6 +10,7 @@ import me.ichmagomaskekse.de.commands.CadminCommand;
 import me.ichmagomaskekse.de.filesystem.FileManager;
 import me.ichmagomaskekse.de.listener.ChatListener;
 import me.ichmagomaskekse.de.listener.ServerJoinAndLeaveListener;
+import me.ichmagomaskekse.de.lobby.Lobby;
 import me.ichmagomaskekse.de.permissions.PermissionList;
 import me.ichmagomaskekse.de.permissions.PermissionManager;
 
@@ -49,8 +50,10 @@ public class CivilCraft extends JavaPlugin {
 		saveResource("civilcraft.yml", false);
 		saveResource("permissions.yml", false);
 		saveResource("players.yml", false);
+		saveResource("player_atlas.yml", false);
 	}
 	public void init() {
+		new PlayerAtlas();
 		filemanager = new FileManager();
 		permissionmanager = new PermissionManager();
 	}
@@ -65,7 +68,12 @@ public class CivilCraft extends JavaPlugin {
 		//Permissions
 		PermissionList.addPermission("cadmin", "civilcraft.cadmin");
 		PermissionList.addPermission("cadmin reload", "civilcraft.cadmin.reload");
-		PermissionList.addPermission("cadmin permissions", "civilcraft.cadmin.permissions");
+		PermissionList.addPermission("cadmin perms", "civilcraft.cadmin.permissions");
+		PermissionList.addPermission("cadmin perms list", "civilcraft.cadmin.permissions.list");
+		PermissionList.addPermission("cadmin perms <PLAYER>", "civilcraft.cadmin.permissions.playerinfos");
+		
+		//Permissions
+		PermissionManager.loadPermPlayers();
 	}
 	
 	//Registriert die Events bei Bukkit
@@ -95,5 +103,17 @@ public class CivilCraft extends JavaPlugin {
 			Bukkit.getConsoleSender().sendMessage("§7["+prefix+"§7] §c"+msg);
 		}
 	}
+
+//	public static void reload(CommandSender sender) {
+//		/*
+//		 * FileManager reloaden
+//		 * PermissionManager neu laden
+//		 * 
+//		 */
+//		CivilCraft.sendInfo(sender, "", "Lade Daten neu");
+//		FileManager.reloadData();
+//		PermissionManager.reloadData();
+//		CivilCraft.sendInfo(sender, "", "Daten wurden neu geladen!");
+//	}
 	
 }

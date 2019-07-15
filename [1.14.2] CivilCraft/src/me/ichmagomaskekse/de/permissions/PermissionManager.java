@@ -16,11 +16,11 @@ import me.ichmagomaskekse.de.CivilCraft;
 public class PermissionManager {
 	
 	private static String permission_path = "plugins/CivilCraft/permissions.yml";
-	private static String index_path = "plugins/CivilCraft/players.yml";
+	private static String player_data_path = "plugins/CivilCraft/players.yml";
 	private static File permission_file = null;
-	private static File index_file = null;
+	private static File player_data_file = null;
 	private static FileConfiguration cfg = null;
-	private static FileConfiguration index = null;
+	private static FileConfiguration player_data_cfg = null;
 	private static ArrayList<String> registered_group_names = new ArrayList<String>();
 	
 	/*                     String = Groupname */
@@ -30,55 +30,73 @@ public class PermissionManager {
 	
 	
 	public PermissionManager() {
-		permission_file = new File(PermissionManager.permission_path);
-		index_file = new File(PermissionManager.index_path);
-		cfg = YamlConfiguration.loadConfiguration(PermissionManager.permission_file);
-		index = YamlConfiguration.loadConfiguration(PermissionManager.index_file);
-		loadGroupNames();
-		loadGroups();
-		loadGroupInherits();
-		loadPermPlayers();
+		reloadData();
 	}
 	
-	
 	//Prozess: Gruppen werden geladen
-	public void loadGroupNames() {
+	public static void loadGroupNames() {
 		PermissionManager.registered_group_names.clear();
 		for(String s : PermissionManager.cfg.getStringList("Permissions.groups")) PermissionManager.registered_group_names.add(s);
 	}
-	public void loadGroups() {
+	public static void loadGroups() {
+		PermissionManager.loaded_groups.clear();
 		//Gruppen werden geladen
 		for(String s : registered_group_names) {
 			loaded_groups.put(s, new PermGroup(s));
 		}
 	}
-	public void loadGroupInherits() {
+	public static void loadGroupInherits() {
 		for(String s : PermissionManager.loaded_groups.keySet()) {
 			PermissionManager.loaded_groups.get(s).loadInherits();
 		}
 	}
 	//-------
 	
-	public void loadPermPlayers() {
+	public static boolean loadPermPlayers() {
+		PermissionManager.permPlayers.clear();
 		for(Player p : Bukkit.getOnlinePlayers()) {
 			permPlayers.put(p.getUniqueId(), new PermPlayer(p.getUniqueId()));
 		}
+		return true;
+	}
+	public static void reloadData() {
+		//Ladet alle Daten neu
+		PermissionManager.permission_file = new File(PermissionManager.permission_path);
+		PermissionManager.player_data_file = new File(PermissionManager.player_data_path);
+		PermissionManager.cfg = YamlConfiguration.loadConfiguration(PermissionManager.permission_file);
+		PermissionManager.player_data_cfg= YamlConfiguration.loadConfiguration(PermissionManager.player_data_file);
+		loadGroupNames();
+		loadGroups();
+		loadGroupInherits();
+		loadPermPlayers();
+		CivilCraft.sendErrorInfo(Bukkit.getConsoleSender(), "", "Test");
+		CivilCraft.sendErrorInfo(Bukkit.getConsoleSender(), "Permission Manager", "Es wurden folgende Gruppen geladen: "+PermissionManager.registered_group_names.toString());
+		CivilCraft.sendErrorInfo(Bukkit.getConsoleSender(), "Permission Manager", "Es wurden folgende Spieler geladen: "+PermissionManager.permPlayers.toString());
 	}
 	//Ladet die PermPlayer Daten
 	public static void loadPermPlayer(Player p) {
 		permPlayers.put(p.getUniqueId(), new PermPlayer(p.getUniqueId()));
+		for(UUID id : permPlayers.keySet()) p.sendMessage(id.toString());
 	}
 	
 	public static boolean hasPermission(Player p, String command) {
 		//TODO: MUSS GEUPDATET WERDEN; INHERITS PRÜFEN; PLAYER PRÜFEN;
-		return p.hasPermission(PermissionList.getPermission(command));
+		boolean bypass = false;
+		bypass = p.hasPermission(PermissionList.getPermission(command));
+		if(bypass == false) CivilCraft.sendInfo(p, "", "§cDu hast nicht das Recht dazu");
+		return bypass;
+	}
+	
+	public static PermPlayer getPermPlayer(UUID uuid) {
+		if(permPlayers.containsKey(uuid)) return permPlayers.get(uuid);
+		else return new PermPlayer(uuid);
 	}
 	
 	public static class PermPlayer {
 		//TODO:
 		public UUID uuid = null;
 		public ArrayList<PermGroup> inherit = new ArrayList<PermGroup>();
-		public ArrayList<PermGroup> groups = new ArrayList<PermGroup>();
+		public PermGroup group; //Es kann nur 1ne Gruppe zugeteilt werden, damit es keine Probleme beim Anzeigen des Prefixes gibt
 		public ArrayList<String> permissions = new ArrayList<String>();
 		public PermPlayer(UUID uuid) {
 			this.uuid = uuid;
@@ -88,30 +106,32 @@ public class PermissionManager {
 		
 		//Ein Spieler wird in den Player Index eingetragen
 		public void registerPlayer(UUID uuid) {
-			FileConfiguration index = YamlConfiguration.loadConfiguration(new File("plugins/CivilCraft/players.yml"));
+			FileConfiguration player_data_cfg= YamlConfiguration.loadConfiguration(PermissionManager.player_data_file);
 			
 			ArrayList<String> list = new ArrayList<String>();
-			list.add("player");
-			index.set("Players."+uuid.toString()+".groups", list);
+			player_data_cfg.set("Players."+uuid.toString()+".group", "player");
 			list.clear();
-			index.set("Players."+uuid.toString()+".permissions", list);
+			player_data_cfg.set("Players."+uuid.toString()+".permissions", list.clone());
 			try {
-				index.save(new File("plugins/CivilCraft/players.yml"));
+				player_data_cfg.save(PermissionManager.player_data_file);
 			} catch (IOException e) {e.printStackTrace();}
+			
+			CivilCraft.sendBroadcast("PermPlayer Loading", "§6"+uuid.toString()+" wurde registriert");
 		}
 
-		public void loadData() {
-			if(PermissionManager.index.getStringList("Players."+this.uuid.toString()+".groups") == null)
-				registerPlayer(this.uuid);
-			groups.clear();
-			for(String s : PermissionManager.index.getStringList("Players."+this.uuid.toString()+".groups")) {
-				if(s == null) break;
-				else groups.add(new PermGroup(s));
-			}
-			for(String s : PermissionManager.index.getStringList("Players."+this.uuid.toString()+".permissions")) {
+		public boolean loadData() {
+			@SuppressWarnings("unused")
+			PermGroup pGroup = null;
+			try{
+				pGroup = new PermGroup(PermissionManager.player_data_cfg.getString("Players."+this.uuid.toString()+".group"));
+			}catch(Exception ex) {registerPlayer(this.uuid);}
+			
+			group = new PermGroup(PermissionManager.player_data_cfg.getString("Players."+this.uuid.toString()+".group"));
+			for(String s : PermissionManager.player_data_cfg.getStringList("Players."+this.uuid.toString()+".permissions")) {
 				if(s == null) break;
 				else permissions.add(s);
 			}
+			return true;
 		}
 	}
 	
@@ -150,6 +170,7 @@ public class PermissionManager {
 			/*
 			 * Inherits werden extra geladen
 			 */
+			CivilCraft.sendInfo(Bukkit.getConsoleSender(), "PermGroup", "Gruppe '"+groupname+"' wurde geladen");
 		}
 		public void loadInherits() {
 			ArrayList<String> in = (ArrayList<String>) PermissionManager.cfg.getStringList("Permissions."+groupname+".inherit");
@@ -172,7 +193,4 @@ public class PermissionManager {
 		}
 		
 	}
-
-
-	
 }

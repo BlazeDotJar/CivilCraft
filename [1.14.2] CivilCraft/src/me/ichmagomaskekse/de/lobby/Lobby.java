@@ -1,4 +1,4 @@
-package me.ichmagomaskekse.de;
+package me.ichmagomaskekse.de.lobby;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -7,12 +7,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import me.ichmagomaskekse.de.CivilCraft;
+import me.ichmagomaskekse.de.ServerType;
 import me.ichmagomaskekse.de.filesystem.FileManager;
 
 public class Lobby {
 	
 	public int lobby_id = -1; //ID um die Lobby zu identifizieren
 	
+	@SuppressWarnings("unused")
 	private static Location spawn; //Spawn Punkt der Lobby
 	private static HashMap<UUID, PlayerProfile> players = new HashMap<UUID, PlayerProfile>();
 //	private Area area = null;

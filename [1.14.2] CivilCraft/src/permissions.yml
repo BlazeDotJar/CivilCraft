@@ -20,30 +20,32 @@
 Permissions:
   # 'Permissions.groups' Beinhaltet alle vorhandenen Permission Gruppen
   groups:
-    - developer
-    - admin
-    - player
+  - developer
+  - admin
+  - player
 # Standart Developer Gruppe
   developer:
     prefix: '&9Developer'
     suffix: '&f'
     permissions:
-      - *
-      - cadmin.*
-    inherit: []
+    - '*'
+    - cadmin.*
+    inherit:
+    - admin
     
 # Standart Admin Gruppe
   admin:
     prefix: '&cAdmin'
     suffix: '&f'
     permissions:
-      - Cadmin.*
-    inherit: []
+    - Cadmin.*
+    inherit:
+    - player
     
 # Standart Spieler Gruppe
   player:
     prefix: ''
     suffix: ''
     permissions:
-      - civilcraft.join
+    - civilcraft.join
     inherit: []
