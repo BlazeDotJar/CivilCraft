@@ -22,6 +22,11 @@ public class ServerJoinAndLeaveListener implements Listener {
 	@EventHandler
 	public void onLogin(PlayerLoginEvent e) {
 		PlayerAtlas.registerPlayer(e.getPlayer());
+		
+//		if(e.getPlayer().hasPermission("civilcraft.join") == false) {
+//			e.disallow(Result.KICK_OTHER, "§cDu hast nicht das Recht zu joinen!");
+//		} else 
+		
 		if(CivilCraft.mainLobby.requestJoin(e.getPlayer()) == false) {
 			e.disallow(Result.KICK_OTHER, "§cKeine freie Lobby gefunden!\nVersuche es später erneut");
 		}
@@ -29,8 +34,8 @@ public class ServerJoinAndLeaveListener implements Listener {
 	
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e) {
-		e.setJoinMessage(FileManager.join_message.replace("{USER}", e.getPlayer().getName()));
 		PermissionManager.loadPermPlayer(e.getPlayer());
+		e.setJoinMessage(FileManager.join_message.replace("{USER}", e.getPlayer().getName()));
 	}
 	
 	@EventHandler

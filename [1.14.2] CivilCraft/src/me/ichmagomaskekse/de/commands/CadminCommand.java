@@ -22,8 +22,7 @@ public class CadminCommand implements CommandExecutor {
 				}else if(args.length == 1) {
 					if(args[0].equals("reload")) {
 						if(!PermissionManager.hasPermission(p, "cadmin reload")) return false;
-//						CivilCraft.reload(sender);
-						PermissionManager.reloadData();
+						CivilCraft.reload(sender);
 					}
 				}
 				if(args.length >= 1) {
@@ -38,10 +37,7 @@ public class CadminCommand implements CommandExecutor {
 				sendCadminInfo(sender);					
 			}else if(args.length == 1) {
 				if(args[0].equals("reload")) {
-					CivilCraft.sendInfo(sender, "", "Lade Daten neu");
-					if(FileManager.reloadData()) {
-						CivilCraft.sendInfo(sender, "", "Daten wurden neu geladen!");
-					}
+					CivilCraft.reload(sender);
 				}
 			}
 			if(args.length >= 1) {

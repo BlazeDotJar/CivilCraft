@@ -29,23 +29,22 @@ Permissions:
     suffix: '&f'
     permissions:
     - '*'
-    - cadmin.*
+    - civilcraft.admin.*
     inherit:
     - admin
-    
 # Standart Admin Gruppe
   admin:
     prefix: '&cAdmin'
     suffix: '&f'
     permissions:
-    - Cadmin.*
+    - civilcraft.admin.*
     inherit:
     - player
-    
 # Standart Spieler Gruppe
   player:
     prefix: ''
     suffix: ''
     permissions:
     - civilcraft.join
+    - -civilcraft.admin
     inherit: []

@@ -48,7 +48,7 @@ public class CivilCraft extends JavaPlugin {
 	public void preInit() {
 		//Dateien werden aus dem Resource Ordner in den Plugins Ordner gespeichert
 		saveResource("civilcraft.yml", false);
-		saveResource("permissions.yml", false);
+		saveResource("groups.yml", false);
 		saveResource("players.yml", false);
 		saveResource("player_atlas.yml", false);
 	}
@@ -66,11 +66,17 @@ public class CivilCraft extends JavaPlugin {
 		getCommand("cadmin").setExecutor(new CadminCommand());
 		
 		//Permissions
-		PermissionList.addPermission("cadmin", "civilcraft.cadmin");
-		PermissionList.addPermission("cadmin reload", "civilcraft.cadmin.reload");
-		PermissionList.addPermission("cadmin perms", "civilcraft.cadmin.permissions");
-		PermissionList.addPermission("cadmin perms list", "civilcraft.cadmin.permissions.list");
-		PermissionList.addPermission("cadmin perms <PLAYER>", "civilcraft.cadmin.permissions.playerinfos");
+		PermissionList.addPermission("cadmin", "civilcraft.admin");
+		PermissionList.addPermission("cadmin reload", "civilcraft.admin.reload");
+		PermissionList.addPermission("cadmin perms", "civilcraft.admin.permissions");
+		PermissionList.addPermission("cadmin perms list", "civilcraft.admin.permissions.list");
+		PermissionList.addPermission("cadmin perms <PLAYER>", "civilcraft.admin.permissions.playerinfos");
+		PermissionList.addPermission("cadmin perms <PLAYER> add", "civilcraft.admin.permissions.add.player");
+		PermissionList.addPermission("cadmin perms <PLAYER> remove", "civilcraft.admin.permissions.remove.player");
+		PermissionList.addPermission("cadmin perms groups", "civilcraft.admin.permissions.groups");
+		PermissionList.addPermission("cadmin perms <GROUP>", "civilcraft.admin.permissions.groupinfos");
+		PermissionList.addPermission("cadmin perms <GROUP> add", "civilcraft.admin.permissions.add.group");
+		PermissionList.addPermission("cadmin perms <GROUP> remove", "civilcraft.admin.permissions.remove.group");
 		
 		//Permissions
 		PermissionManager.loadPermPlayers();
@@ -104,16 +110,17 @@ public class CivilCraft extends JavaPlugin {
 		}
 	}
 
-//	public static void reload(CommandSender sender) {
-//		/*
-//		 * FileManager reloaden
-//		 * PermissionManager neu laden
-//		 * 
-//		 */
-//		CivilCraft.sendInfo(sender, "", "Lade Daten neu");
-//		FileManager.reloadData();
-//		PermissionManager.reloadData();
-//		CivilCraft.sendInfo(sender, "", "Daten wurden neu geladen!");
-//	}
+	public static void reload(CommandSender sender) {
+		/*
+		 * FileManager reloaden
+		 * PermissionManager neu laden
+		 * 
+		 */
+		CivilCraft.sendInfo(sender, "", "Lade Daten neu");
+		FileManager.reloadData();
+		PermissionManager.reloadData();
+		PlayerAtlas.registerOnlinePlayers();
+		CivilCraft.sendInfo(sender, "", "Daten wurden neu geladen!");
+	}
 	
 }

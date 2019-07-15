@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -34,5 +35,9 @@ public class PlayerAtlas {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static void registerOnlinePlayers() {
+		for(Player p : Bukkit.getOnlinePlayers())registerPlayer(p);
 	}
 }
