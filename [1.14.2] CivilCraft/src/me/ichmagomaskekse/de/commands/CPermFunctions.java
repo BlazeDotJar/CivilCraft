@@ -14,6 +14,7 @@ import me.ichmagomaskekse.de.permissions.PermissionList;
 import me.ichmagomaskekse.de.permissions.PermissionManager;
 import me.ichmagomaskekse.de.permissions.PermissionManager.PermGroup;
 import me.ichmagomaskekse.de.permissions.PermissionManager.PermPlayer;
+import me.ichmagomaskekse.de.permissions.PermissionManager.PermissionOrigin;
 
 public class CPermFunctions {
 	//Diese Methode wird nur aufgerufen, wenn das 1te Argument eines Command 'perms' lautet
@@ -27,14 +28,14 @@ public class CPermFunctions {
 			break;
 		case 2:
 			if(args[1].equals("list")) {
-				if(!PermissionManager.hasPermission(sender, "cadmin perm list")) return false;
+				if(!PermissionManager.hasPermission(sender, "cadmin perms list")) return false;
 				listPermissions(sender);
 				
 			} else if(args[1].equals("groups")) {
-				if(!PermissionManager.hasPermission(sender, "cadmin perm groups")) return false;
+				if(!PermissionManager.hasPermission(sender, "cadmin perms groups")) return false;
 				listGroups(sender);
 				
-			} else if(args[1].startsWith("G:") || args[1].startsWith("g:")) {
+			} else if(args[1].startsWith("G:") || args[1].startsWith("g:") || args[1].startsWith("g.") || args[1].startsWith("g.")) {
 				sendGroupInfos(sender, args[1].substring(2, args[1].length()));
 				
 			} else {
@@ -49,7 +50,7 @@ public class CPermFunctions {
 		case 3:
 			if(args[2].equals("")) {
 				
-			} else if(args[1].startsWith("G:") || args[1].startsWith("g:")) {
+			} else if(args[1].startsWith("G:") || args[1].startsWith("g:") || args[1].startsWith("g.")) {
 				String group = args[1].substring(2, args[1].length());
 				if(args[2].equals("add")) {
 					if(!PermissionManager.hasPermission(sender, "cadmin perms <GROUP> add")) return false;
@@ -57,6 +58,16 @@ public class CPermFunctions {
 				}else if(args[2].equals("remove")) {
 					if(!PermissionManager.hasPermission(sender, "cadmin perms <GROUP> remove")) return false;
 					sender.sendMessage("§cNutze §f/cadmin perms G:"+group+" remove <§7Permission§f> §cum Gruppe "+group+" eine Permission zu entziehen");
+				}else if(args[2].equals("create")) {
+					if(!PermissionManager.hasPermission(sender, "cadmin perms <GROUP> create")) return false;
+					new PermGroup(group, true);
+					CivilCraft.sendInfo(sender, "", "Gruppe §7"+group+" §fwurde erstellt");
+				}else if(args[2].equals("prefix")) {
+					if(!PermissionManager.hasPermission(sender, "cadmin perms <GROUP> prefix")) return false;
+					sender.sendMessage("§cNutze §f/cadmin perms "+group+" prefix §<Prefix> set §cum den Prefix zu ändern");
+				}else if(args[2].equals("suffix")) {
+					if(!PermissionManager.hasPermission(sender, "cadmin perms <GROUP> suffix")) return false;
+					sender.sendMessage("§cNutze §f/cadmin perms "+group+" suffix §<Suffix> set §cum den Suffix zu ändern");
 				}
 			} else {
 				//Prüfen, ob das Argument 1 ein Spielername ist
@@ -76,7 +87,7 @@ public class CPermFunctions {
 		case 4:
 			if(args[2].equals("")) {
 				
-			} else if(args[1].startsWith("G:") || args[1].startsWith("g:")) {
+			} else if(args[1].startsWith("G:") || args[1].startsWith("g:") || args[1].startsWith("g.")) {
 				String group = args[1].substring(2, args[1].length());
 				String perm = args[3];
 				if(args[2].equals("add")) {
@@ -88,6 +99,12 @@ public class CPermFunctions {
 					if(!PermissionManager.hasPermission(sender, "cadmin perms <GROUP> remove")) return false;
 					PermissionManager.getPermGroup(group).removePermission(perm);
 					CivilCraft.sendInfo(sender, "", "Gruppe §7"+group+" §fwurde §7"+perm+" §fentzogen");
+				}else if(args[2].equals("prefix")) {
+					if(!PermissionManager.hasPermission(sender, "cadmin perms <GROUP> prefix")) return false;
+					sender.sendMessage("§cNutze §f/cadmin perms "+group+" prefix §<Prefix> set §cum den Prefix zu ändern");
+				}else if(args[2].equals("suffix")) {
+					if(!PermissionManager.hasPermission(sender, "cadmin perms <GROUP> suffix")) return false;
+					sender.sendMessage("§cNutze §f/cadmin perms "+group+" suffix §<Suffix> set §cum den Suffix zu ändern");
 				}
 			} else {
 				//Prüfen, ob das Argument 1 ein Spielername ist
@@ -96,12 +113,34 @@ public class CPermFunctions {
 				else {
 					if(args[2].equals("add")) {
 						if(!PermissionManager.hasPermission(sender, "cadmin perms <PLAYER> add")) return false;
-						PermissionManager.getPermPlayer(PlayerAtlas.getUUIDbyName(arg)).addPermission(args[3]);
+						PermissionManager.getPermPlayer(PlayerAtlas.getUUIDbyName(arg)).addPermission(PermissionOrigin.OWN, args[3]);
 						CivilCraft.sendInfo(sender, "", args[3]+" wurde "+arg+" erteilt");
 					}else if(args[2].equals("remove")) {
 						if(!PermissionManager.hasPermission(sender, "cadmin perms <PLAYER> remove")) return false;
 						PermissionManager.getPermPlayer(PlayerAtlas.getUUIDbyName(arg)).removePermission(args[3]);
 						CivilCraft.sendInfo(sender, "", args[3]+" wurde "+arg+" entzogen");
+					}
+				}
+			}
+			break;
+		case 5:
+			if(args[2].equals("")) {
+				
+			} else if(args[1].startsWith("G:") || args[1].startsWith("g:") || args[1].startsWith("g.")) {
+				String group = args[1].substring(2, args[1].length());
+				if(args[4].equals("set")) {
+					if(args[2].equals("prefix")) {
+						if(!PermissionManager.hasPermission(sender, "cadmin perms <GROUP> prefix set")) return false;
+						PermissionManager.getPermGroup(group).prefix = args[3].replace("&", "§").replaceAll("%a", " ");
+						PermissionManager.getPermGroup(group).saveData(true);
+						PermissionManager.refreshGroupData(PermissionManager.getPermGroup(group));
+						CivilCraft.sendInfo(sender, "", "Prefix wurde zu '§f"+args[3].replace("&", "§").replaceAll("%a", " ")+"§f' §fgeändert");
+					}else if(args[2].equals("suffix")) {
+						if(!PermissionManager.hasPermission(sender, "cadmin perms <GROUP> suffix set")) return false;
+						PermissionManager.getPermGroup(group).suffix = args[3].replace("&", "§").replaceAll("%a", " ");
+						PermissionManager.getPermGroup(group).saveData(true);
+						PermissionManager.refreshGroupData(PermissionManager.getPermGroup(group));
+						CivilCraft.sendInfo(sender, "", "Suffix wurde zu '§f"+args[3].replace("&", "§").replaceAll("%a", " ")+"§f' geändert");
 					}
 				}
 			}
@@ -124,7 +163,9 @@ public class CPermFunctions {
 		sender.sendMessage("  <Spielername> [add/remove] <Permission> §aPermission erteilen/entziehen");
 		sender.sendMessage("  <Spielername> §aZeigt alle Perms-Daten eines Spielers");
 		sender.sendMessage("  groups §aZeigt alle erfassten Perm-Groups an");
+		sender.sendMessage("  g:<Gruppenname> create §aEine neue Gruppe erstellen");
 		sender.sendMessage("  g:<Gruppenname> [add/remove] <Permission> §aEiner Gruppe eine Permission erteilen/entziehen");
+		sender.sendMessage("  g:<Gruppenname> [prefix/suffix] <Wert> set §aPrefix/Suffix einer Gruppe ändern");
 	}
 	
 	private static void listPermissions(CommandSender sender) {
@@ -171,9 +212,21 @@ public class CPermFunctions {
 		for(String s : pPlayer.group.anti_permissions) if(registered_anti_perms.contains(s) == false) registered_perms.add(s);
 		
 		CivilCraft.sendInfo(sender, "Perms", "Permissions & Anti-Permissions:");
-		for(String s : pPlayer.permissions) sender.sendMessage("§b - §f"+s);
-		for(String s : registered_perms) sender.sendMessage("§6 - §f"+s);
-		for(String s : registered_anti_perms) sender.sendMessage("§c - §f§l-§f"+s);
+		CivilCraft.sendInfo(sender, "Perms", "§fWhite=Own §6Gold=Group §cRed=Group(Anti)");
+		for(String perm : pPlayer.permissions.keySet()) {
+			PermissionOrigin origin = pPlayer.permissions.get(perm);
+			if(origin == PermissionOrigin.OWN){
+				sender.sendMessage("§f - "+perm);
+			}
+			else if(origin == PermissionOrigin.GROUP) {
+				if(perm.startsWith("-") == false) sender.sendMessage("§6 - "+perm);
+				else sender.sendMessage("§c - §c-"+perm);
+			}
+		}
+		for(String perm : pPlayer.group.anti_permissions) {
+			if(perm.startsWith("-") == false) sender.sendMessage("§6 - "+perm);
+			else sender.sendMessage("§c - §c"+perm);
+		}
 	}
 	
 }

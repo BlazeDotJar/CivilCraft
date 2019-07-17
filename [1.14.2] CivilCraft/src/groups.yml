@@ -26,25 +26,24 @@ Permissions:
 # Standart Developer Gruppe
   developer:
     prefix: '&9Developer'
-    suffix: '&f'
+    suffix: '&f:'
     permissions:
     - '*'
-    - civilcraft.admin.*
     inherit:
     - admin
 # Standart Admin Gruppe
   admin:
     prefix: '&cAdmin'
-    suffix: '&f'
+    suffix: '&f:'
     permissions:
-    - civilcraft.admin.*
     inherit:
     - player
 # Standart Spieler Gruppe
   player:
-    prefix: ''
-    suffix: ''
+    prefix: '&7Spieler'
+    suffix: '&8:'
     permissions:
-    - civilcraft.join
-    - -civilcraft.admin
+    - civilcraft.interact.item.everything
+    - civilcraft.interact.block.everything
+    - civilcraft.modifyworld.everywhere
     inherit: []

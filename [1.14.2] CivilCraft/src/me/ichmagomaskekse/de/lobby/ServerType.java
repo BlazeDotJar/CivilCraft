@@ -1,4 +1,4 @@
-package me.ichmagomaskekse.de;
+package me.ichmagomaskekse.de.lobby;
 
 public enum ServerType {
 	

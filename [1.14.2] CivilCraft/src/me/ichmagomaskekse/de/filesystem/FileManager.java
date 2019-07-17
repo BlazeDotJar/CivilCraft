@@ -1,9 +1,13 @@
 package me.ichmagomaskekse.de.filesystem;
 
 import java.io.File;
+import java.util.UUID;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+
+import me.ichmagomaskekse.de.lobby.ServerType;
 
 public class FileManager {
 	
@@ -50,6 +54,19 @@ public class FileManager {
 	
 	public static boolean reloadData() {
 		return loadData();
+	}
+	
+public static class PlayerProfile {
+		
+		public ServerType current_server = ServerType.UNKNOWN;
+		public Player player = null;
+		public UUID uuid = null;
+		
+		public PlayerProfile(Player player) {
+			this.player = player;
+			this.uuid = player.getUniqueId();
+		}
+		
 	}
 	
 }

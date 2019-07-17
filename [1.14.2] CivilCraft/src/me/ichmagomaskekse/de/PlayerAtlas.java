@@ -28,6 +28,7 @@ public class PlayerAtlas {
 		return name;
 	}
 	public static void registerPlayer(Player p) {
+		PlayerAtlas.atlas_cfg = YamlConfiguration.loadConfiguration(PlayerAtlas.atlas_file);
 		PlayerAtlas.atlas_cfg.set(p.getUniqueId().toString(), p.getName());
 		PlayerAtlas.atlas_cfg.set(p.getName(), p.getUniqueId().toString());
 		try {
@@ -36,8 +37,14 @@ public class PlayerAtlas {
 			e.printStackTrace();
 		}
 	}
-
-	public static void registerOnlinePlayers() {
-		for(Player p : Bukkit.getOnlinePlayers())registerPlayer(p);
+	
+	public static boolean registerOnlinePlayers() {
+		CivilCraft.sendErrorInfo(Bukkit.getConsoleSender(), "ATLAS", "REGISTER ON-Players");
+		for(Player p : Bukkit.getOnlinePlayers()) {
+			CivilCraft.sendErrorInfo(Bukkit.getConsoleSender(), "ATLAS", "On.Players while Reload.Name: "+p.getName());
+			CivilCraft.sendErrorInfo(Bukkit.getConsoleSender(), "ATLAS", "On.Players while Reload.Name: "+p.getUniqueId().toString());
+			PlayerAtlas.registerPlayer(p);
+		}
+		return true;
 	}
 }

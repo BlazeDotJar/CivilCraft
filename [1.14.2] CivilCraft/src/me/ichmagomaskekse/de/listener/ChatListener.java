@@ -8,6 +8,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import me.ichmagomaskekse.de.CivilCraft;
 import me.ichmagomaskekse.de.permissions.PermissionManager;
+import me.ichmagomaskekse.de.permissions.PermissionManager.PermGroup;
 
 public class ChatListener implements Listener {
 	
@@ -18,9 +19,11 @@ public class ChatListener implements Listener {
 	@EventHandler
 	public void onChat(AsyncPlayerChatEvent e) {
 		Player p = e.getPlayer();
-		if(PermissionManager.hasPermission(p, "&", false)) {
+		if(PermissionManager.hasPermission(p, "chat:colored", false)) {
 			e.setMessage(e.getMessage().replace("&", "§"));
 		}
+		PermGroup group = PermissionManager.getPermPlayer(p.getUniqueId()).group;
+		e.setFormat(group.prefix+" "+p.getName()+""+group.suffix+" "+e.getMessage());
 	}
 	
 	@EventHandler

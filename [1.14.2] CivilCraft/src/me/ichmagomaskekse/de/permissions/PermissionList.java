@@ -6,12 +6,15 @@ import java.util.HashMap;
 public class PermissionList {
 	
 	private static ArrayList<CommandPermission> permissions = new ArrayList<CommandPermission>();
+	//OP-Permissions sind Permission mit einem *
+	private static ArrayList<CommandPermission> op_permissions = new ArrayList<CommandPermission>();
 	
 	public static boolean addPermission(String command, String permission) {
 		boolean exists = doesExist(command);
 		if(exists) return false;
 		else {
-			permissions.add(new CommandPermission(command, permission));
+			if(permission.endsWith(".*")) op_permissions.add(new CommandPermission(command, permission));
+			else permissions.add(new CommandPermission(command, permission));
 			return true;
 		}
 	}
@@ -32,6 +35,12 @@ public class PermissionList {
 		}
 		return "UNKNOWN PERMISSION";
 	}
+	public static String getOpPermission(String command) {
+		for(CommandPermission c : op_permissions) {
+			if(c.cmd.equals(command)) return c.perm;
+		}
+		return "UNKNOWN OP-PERMISSION";
+	}
 	
 	
 	public static HashMap<String, String> getPermissions() {
@@ -42,6 +51,11 @@ public class PermissionList {
 		}
 		
 		return perms;
+	}
+	
+	public static boolean knowsOpPermission(String command) {
+		if(op_permissions.contains(command)) return true;
+		else return false;
 	}
 	
 	private static class CommandPermission {

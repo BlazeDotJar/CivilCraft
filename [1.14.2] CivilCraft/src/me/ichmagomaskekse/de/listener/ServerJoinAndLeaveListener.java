@@ -25,14 +25,13 @@ public class ServerJoinAndLeaveListener implements Listener {
 		if(CivilCraft.mainLobby.requestJoin(e.getPlayer()) == false) {
 			e.disallow(Result.KICK_OTHER, "§cKeine freie Lobby gefunden!\nVersuche es später erneut");
 		}
-		
-		
 	}
 	
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e) {
 		PermissionManager.loadPermPlayer(e.getPlayer());
 		e.setJoinMessage(FileManager.join_message.replace("{USER}", e.getPlayer().getName()));
+		e.getPlayer().sendMessage("Hast du die Perm? "+e.getPlayer().hasPermission("civilcraft.join")); 
 	}
 	
 	@EventHandler

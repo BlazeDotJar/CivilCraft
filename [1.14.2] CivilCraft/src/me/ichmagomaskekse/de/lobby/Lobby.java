@@ -8,8 +8,8 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import me.ichmagomaskekse.de.CivilCraft;
-import me.ichmagomaskekse.de.ServerType;
 import me.ichmagomaskekse.de.filesystem.FileManager;
+import me.ichmagomaskekse.de.filesystem.FileManager.PlayerProfile;
 
 public class Lobby {
 	
@@ -93,17 +93,6 @@ public class Lobby {
 		}
 	}
 	
-	public class PlayerProfile {
-		
-		public ServerType current_server = ServerType.UNKNOWN;
-		public Player player = null;
-		public UUID uuid = null;
-		
-		public PlayerProfile(Player player) {
-			this.player = player;
-			this.uuid = player.getUniqueId();
-		}
-		
-	}
+	
 	
 }
