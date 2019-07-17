@@ -1,0 +1,11 @@
+#
+# Standart Spawn bei: -165 55 -39, in Welt: world
+#
+Spawn:
+  X: -165
+  Y: 55
+  Z: -39
+  Yaw: 0
+  Pitch: 0
+  World: 'world'
+  

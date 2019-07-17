@@ -9,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.ichmagomaskekse.de.commands.CadminCommand;
+import me.ichmagomaskekse.de.commands.teleporting.SpawnCommand;
 import me.ichmagomaskekse.de.filesystem.FileManager;
 import me.ichmagomaskekse.de.listener.BlockBreakListener;
 import me.ichmagomaskekse.de.listener.ChatListener;
@@ -55,10 +56,10 @@ public class CivilCraft extends JavaPlugin {
 		File groups = new File("plugins/CivilCraft/Permissions/groups.yml");
 		File players = new File("plugins/CivilCraft/Permissions/players.yml");
 										saveResource("civilcraft.yml", false);
-		if(groups.exists() == false)	saveResource("groups.yml", false);
-		if(players.exists() == false)	saveResource("players.yml", false);
+		if(groups.exists() == false)	saveResource("Permissions/groups.yml", false);
+		if(players.exists() == false)	saveResource("Permissions/players.yml", false);
 										saveResource("player_atlas.yml", false);
-		moveResourceFiles();
+										saveResource("Teleportation/spawn.yml", false);
 	}
 	public void init() {
 		playeratlas = new PlayerAtlas();
@@ -73,6 +74,8 @@ public class CivilCraft extends JavaPlugin {
 		
 		//Commands
 		getCommand("cadmin").setExecutor(new CadminCommand());
+		getCommand("spawn").setExecutor(new SpawnCommand());
+		getCommand("setspawn").setExecutor(new SpawnCommand());
 		
 		//Permissions
 		//Es können nur dann 2 Permissions für 1nen Command verteilt werden, wenn eine Permission davon
@@ -95,6 +98,8 @@ public class CivilCraft extends JavaPlugin {
 		PermissionList.addPermission("cadmin perms <GROUP> create", "civilcraft.admin.permissions.group.create");
 		PermissionList.addPermission("cadmin perms <GROUP> prefix set", "civilcraft.admin.permissions.group.prefix.set");
 		PermissionList.addPermission("cadmin perms <GROUP> suffix set", "civilcraft.admin.permissions.group.suffix.set");
+		PermissionList.addPermission("spawn", "civilcraft.spawn");
+		PermissionList.addPermission("setspawn", "civilcraft.setspawn");
 		
 		//Permission Profile laden
 		PermissionManager.loadPermPlayers();
@@ -136,15 +141,6 @@ public class CivilCraft extends JavaPlugin {
 		PlayerAtlas.registerOnlinePlayers();
 		PermissionManager.reloadData();
 		CivilCraft.sendInfo(sender, "", "[3/3] Fertig!");
-	}
-	
-	public static void moveResourceFiles() {
-		//TODO: Muss programmiert werden und die Pfade müssen in PermissionManager und FileManager aktualisiert werden
-		File groups = new File("plugins/CivilCraft/groups.yml");
-		File players = new File("plugins/CivilCraft/players.yml");
-		groups.renameTo(new File("plugins/CivilCraft/Permissions/groups.yml"));
-		players.renameTo(new File("plugins/CivilCraft/Permissions/players.yml"));
-		return;
 	}
 	
 }

@@ -40,13 +40,36 @@ public class PermissionManager {
 		PermissionManager.registered_group_names.clear();
 		for(String s : PermissionManager.groups_cfg.getStringList("Permissions.groups")) PermissionManager.registered_group_names.add(s);
 	}
-	public static void loadGroups() {
-		PermissionManager.loaded_groups.clear();
-		//Gruppen werden geladen
-		for(String s : registered_group_names) {
-			loaded_groups.put(s, new PermGroup(s));
+	//Lädt eine Gruppe und gibt sie zurück
+	public static PermGroup loadGroup(String name) {
+		boolean success = true;
+		CivilCraft.sendBroadcast("", "NAME: "+name);
+		if(registered_group_names.contains(name)) {
+			if(loaded_groups.containsKey(name)) {
+				PermGroup pgroup = loaded_groups.get(name);
+				pgroup.loadInherits();
+				CivilCraft.sendBroadcast("", "Group "+name+" loaded and returned");
+				return pgroup;
+			}else success = false;
+		}
+		if(success == false) {			
+			PermGroup pgroup = new PermGroup(name);
+			pgroup.loadInherits();
+			loaded_groups.put(name, pgroup);
+			CivilCraft.sendBroadcast("", "Group "+name+" returned");
+			return pgroup;
+		}else {
+			CivilCraft.sendBroadcast("", "Returning null");
+			return null;
 		}
 	}
+//	public static void loadGroups() {
+//		PermissionManager.loaded_groups.clear();
+//		//Gruppen werden geladen
+//		for(String s : registered_group_names) {
+//			loaded_groups.put(s, new PermGroup(s));
+//		}
+//	}
 	public static void loadGroupInherits() {
 		for(String s : PermissionManager.loaded_groups.keySet()) {
 			PermissionManager.loaded_groups.get(s).loadInherits();
@@ -69,8 +92,8 @@ public class PermissionManager {
 		PermissionManager.groups_cfg = YamlConfiguration.loadConfiguration(PermissionManager.groups_file);
 		PermissionManager.player_data_cfg= YamlConfiguration.loadConfiguration(PermissionManager.player_data_file);
 		loadGroupNames();
-		loadGroups();
-		loadGroupInherits();
+//		loadGroups();
+//		loadGroupInherits();
 		loadPermPlayers();
 //		CivilCraft.sendInfo(Bukkit.getConsoleSender(), "Permission Manager", "Es wurden folgende Gruppen geladen: "+PermissionManager.registered_group_names.toString());
 //		CivilCraft.sendInfo(Bukkit.getConsoleSender(), "Permission Manager", "Es wurden folgende Spieler geladen: "+PermissionManager.permPlayers.toString());
@@ -181,9 +204,9 @@ public class PermissionManager {
 		public boolean loadData() {
 			if(PermissionManager.player_data_cfg.getString("Players."+this.uuid.toString()+".group") == null) registerPlayer(this.uuid, true);
 			
-			String name = PermissionManager.player_data_cfg.getString("Players."+this.uuid.toString()+".group");
-			if(name == null) CivilCraft.sendErrorInfo(Bukkit.getConsoleSender(), "", "name ======== NULL");
-			group = new PermGroup(name);
+			String group_name = PermissionManager.player_data_cfg.getString("Players."+this.uuid.toString()+".group");
+			if(group_name == null) CivilCraft.sendErrorInfo(Bukkit.getConsoleSender(), "", "name ======== NULL");
+			group = loadGroup(group_name);
 			group.loadInherits();
 			
 			for(String s : PermissionManager.player_data_cfg.getStringList("Players."+this.uuid.toString()+".permissions")) {

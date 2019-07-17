@@ -5,3 +5,7 @@ main: me.ichmagomaskekse.de.CivilCraft
 commands:
   cadmin:
     description: 'CivilCraft admin command'
+  spawn:
+    description: 'Teleportiere dich zum Spawn'
+  setspawn:
+    description: 'Setze den Server Spawn'
