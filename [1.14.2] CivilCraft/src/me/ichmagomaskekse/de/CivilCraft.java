@@ -1,6 +1,8 @@
 package me.ichmagomaskekse.de;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -8,11 +10,22 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import me.ichmagomaskekse.de.commands.BackupCommand;
 import me.ichmagomaskekse.de.commands.CadminCommand;
+import me.ichmagomaskekse.de.commands.FlightCommand;
+import me.ichmagomaskekse.de.commands.GamemodeCommand;
+import me.ichmagomaskekse.de.commands.GlobalMuteCommand;
+import me.ichmagomaskekse.de.commands.GodmodeCommand;
+import me.ichmagomaskekse.de.commands.PermissionCheckerCommand;
+import me.ichmagomaskekse.de.commands.WhoCommand;
+import me.ichmagomaskekse.de.commands.healing.FeedCommand;
+import me.ichmagomaskekse.de.commands.healing.HealCommand;
 import me.ichmagomaskekse.de.commands.teleporting.SpawnCommand;
+import me.ichmagomaskekse.de.filesystem.BackupManager;
 import me.ichmagomaskekse.de.filesystem.FileManager;
 import me.ichmagomaskekse.de.listener.BlockBreakListener;
 import me.ichmagomaskekse.de.listener.ChatListener;
+import me.ichmagomaskekse.de.listener.DamageListener;
 import me.ichmagomaskekse.de.listener.ServerJoinAndLeaveListener;
 import me.ichmagomaskekse.de.lobby.Lobby;
 import me.ichmagomaskekse.de.permissions.PermissionList;
@@ -20,16 +33,18 @@ import me.ichmagomaskekse.de.permissions.PermissionManager;
 
 public class CivilCraft extends JavaPlugin {
 	
-	/*
-	 *  Dies ist die Lobby Klasse
-	 */
+	
 	private static CivilCraft ccraft = null;
 	public static CivilCraft getInstance() { return ccraft; }
+	public static boolean global_mute = false;
 	
 	//Instanzen: Manager, Handler, etc
 	public FileManager filemanager = null;
 	public PermissionManager permissionmanager = null;
 	public PlayerAtlas playeratlas = null;
+	public ProfileManager profileManager = null;
+	public static SpawnCommand command_spawn = null;
+	public BackupManager backupManager = null;
 	
 	public static Lobby mainLobby = new Lobby(1);
 	
@@ -48,6 +63,7 @@ public class CivilCraft extends JavaPlugin {
 	public void onDisable() {
 		// TODO:
 		PermissionManager.disable();
+		ProfileManager.disable();
 		super.onDisable();
 	}
 	
@@ -65,22 +81,49 @@ public class CivilCraft extends JavaPlugin {
 		playeratlas = new PlayerAtlas();
 		filemanager = new FileManager();
 		permissionmanager = new PermissionManager();
+		profileManager = new ProfileManager();
+		backupManager = new BackupManager();
+		backupManager.createBackup();
+		
+		command_spawn = new SpawnCommand();
 	}
 	public void postInit() {
 		//Events
 		new ServerJoinAndLeaveListener();
 		new ChatListener();
 		new BlockBreakListener();
+		new DamageListener();
 		
 		//Commands
+		getCommand("backup").setExecutor(new BackupCommand());
 		getCommand("cadmin").setExecutor(new CadminCommand());
-		getCommand("spawn").setExecutor(new SpawnCommand());
+		getCommand("feed").setExecutor(new FeedCommand());
+		getCommand("fly").setExecutor(new FlightCommand());
+		getCommand("gamemode").setExecutor(new GamemodeCommand());
+		getCommand("globalmute").setExecutor(new GlobalMuteCommand());
+		getCommand("godmode").setExecutor(new GodmodeCommand());
+		getCommand("heal").setExecutor(new HealCommand());
+		getCommand("mute").setExecutor(new GlobalMuteCommand());
+		getCommand("spawn").setExecutor(command_spawn);
 		getCommand("setspawn").setExecutor(new SpawnCommand());
+		getCommand("who").setExecutor(new WhoCommand());
+		getCommand("permcheck").setExecutor(new PermissionCheckerCommand());
 		
 		//Permissions
 		//Es können nur dann 2 Permissions für 1nen Command verteilt werden, wenn eine Permission davon
 		//eine OP-Permission ist. Sprich: mit einem '.*' endet
-		PermissionList.addPermission("chat:colored", "civilcraft.chat.colored");
+		PermissionList.addPermission("backup", "civilcraft.admin.backup");
+		PermissionList.addPermission("permcheck", "civilcraft.admin.permcheck");
+		PermissionList.addPermission("chatcolor", "civilcraft.chat.colored");
+		PermissionList.addPermission("godmode", "civilcraft.godmode");
+		PermissionList.addPermission("godmode", "civilcraft.godmode.other");
+		PermissionList.addPermission("who", "civilcraft.who");
+		PermissionList.addPermission("fly", "civilcraft.fly");
+		PermissionList.addPermission("fly", "civilcraft.fly.other");
+		PermissionList.addPermission("mute", "civilcraft.chat.mute.other");
+		PermissionList.addPermission("mute bypass", "civilcraft.chat.mute.bypass");
+		PermissionList.addPermission("globalmute", "civilcraft.chat.mute");
+		PermissionList.addPermission("globalmute bypass", "civilcraft.chat.mute.bypass");
 		PermissionList.addPermission("modifyworld:everywhere", "civilcraft.modifyworld.everywhere");
 		PermissionList.addPermission("interact_block:everything", "civilcraft.interact.block.everything");
 		PermissionList.addPermission("interact_item:everything", "civilcraft.interact.item.everything");
@@ -100,9 +143,17 @@ public class CivilCraft extends JavaPlugin {
 		PermissionList.addPermission("cadmin perms <GROUP> suffix set", "civilcraft.admin.permissions.group.suffix.set");
 		PermissionList.addPermission("spawn", "civilcraft.spawn");
 		PermissionList.addPermission("setspawn", "civilcraft.setspawn");
+		PermissionList.addPermission("heal", "civilcraft.heal");
+		PermissionList.addPermission("heal other", "civilcraft.heal.other");
+		PermissionList.addPermission("feed", "civilcraft.feed");
+		PermissionList.addPermission("feed other", "civilcraft.feed.other");
+		PermissionList.addPermission("gamemode", "civilcraft.gamemode");
+		PermissionList.addPermission("gamemode other", "civilcraft.gamemode.other");
 		
 		//Permission Profile laden
-		PermissionManager.loadPermPlayers();
+//		PermissionManager.loadPermPlayers();
+		//Spawn Location laden
+		command_spawn.loadSpawnLocation();
 	}
 	
 	//Registriert die Events bei Bukkit
@@ -132,6 +183,14 @@ public class CivilCraft extends JavaPlugin {
 			Bukkit.getConsoleSender().sendMessage("§7["+prefix+"§7] §c"+msg);
 		}
 	}
+	
+	public static void sendDeveloperInformation(String prefix, String... message) {
+		if(prefix.equals("null") || prefix.equals("")) prefix = FileManager.server_prefix;
+		for(String msg : message) {
+			try{Bukkit.getPlayer("IchMagOmasKekse").sendMessage("§7["+prefix+"§7] [§9DEV§7] §c"+msg);}catch(NullPointerException ex){}
+			Bukkit.getConsoleSender().sendMessage("§7["+prefix+"§7] [§3DEV§7] §c"+msg);
+		}
+	}
 
 	public static void reload(CommandSender sender) {
 		//Datein neu erstellen, falls sie nichtmehr existieren
@@ -140,7 +199,22 @@ public class CivilCraft extends JavaPlugin {
 		FileManager.reloadData();
 		PlayerAtlas.registerOnlinePlayers();
 		PermissionManager.reloadData();
+		ProfileManager.reloadData();
+		command_spawn.loadSpawnLocation();
 		CivilCraft.sendInfo(sender, "", "[3/3] Fertig!");
 	}
+	
+	public static String getTimeInString() {
+		SimpleDateFormat formatter= new SimpleDateFormat("HH-mm-ss");
+		Date date = new Date(System.currentTimeMillis());
+		return formatter.format(date);
+	}
+	public static String getDateInString() {
+		SimpleDateFormat formatter= new SimpleDateFormat("dd-MM-yyyy");
+		Date date = new Date(System.currentTimeMillis());
+		
+		return formatter.format(date);
+	}
+
 	
 }

@@ -20,7 +20,10 @@ public class PlayerAtlas {
 	}
 	
 	public static UUID getUUIDbyName(String name) {
-		UUID uuid = UUID.fromString(PlayerAtlas.atlas_cfg.getString(name));
+		UUID uuid = null;
+		try{
+			uuid = UUID.fromString(PlayerAtlas.atlas_cfg.getString(name));
+		}catch(Exception ex) {CivilCraft.sendErrorInfo(Bukkit.getConsoleSender(), "Atlas", "Es wurde versucht, die UUID von §f"+name+" §cabzurufen.\nDer Spieler §f"+name+" §cist noch nicht registriert.");}
 		return uuid;
 	}
 	public static String getNameByUUID(UUID uuid) {
@@ -39,10 +42,10 @@ public class PlayerAtlas {
 	}
 	
 	public static boolean registerOnlinePlayers() {
-		CivilCraft.sendErrorInfo(Bukkit.getConsoleSender(), "ATLAS", "REGISTER ON-Players");
+		CivilCraft.sendInfo(Bukkit.getConsoleSender(), "Atlas", "§eRegister online players..");
 		for(Player p : Bukkit.getOnlinePlayers()) {
-			CivilCraft.sendErrorInfo(Bukkit.getConsoleSender(), "ATLAS", "On.Players while Reload.Name: "+p.getName());
-			CivilCraft.sendErrorInfo(Bukkit.getConsoleSender(), "ATLAS", "On.Players while Reload.Name: "+p.getUniqueId().toString());
+//			CivilCraft.sendErrorInfo(Bukkit.getConsoleSender(), "ATLAS", "On.Players while Reload.Name: "+p.getName());
+//			CivilCraft.sendErrorInfo(Bukkit.getConsoleSender(), "ATLAS", "On.Players while Reload.Name: "+p.getUniqueId().toString());
 			PlayerAtlas.registerPlayer(p);
 		}
 		return true;

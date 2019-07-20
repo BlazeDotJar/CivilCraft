@@ -3,9 +3,33 @@ version: 1.0
 author: IchMagOmasKekse
 main: me.ichmagomaskekse.de.CivilCraft
 commands:
+  backup:
+    description: 'Erstelle ein Backup des Plugin Ordners'
   cadmin:
     description: 'CivilCraft admin command'
   spawn:
-    description: 'Teleportiere dich zum Spawn'
+    description: 'TP zum Serverspawn'
   setspawn:
-    description: 'Setze den Server Spawn'
+    description: 'Serverspawn setzen'
+  heal:
+    description: 'Spieler heilen'
+  feed:
+    description: 'Hunger beseitigen'
+  gamemode:
+    description: 'Gamemode setzen'
+    aliases: [gm, gmode, mode]
+  globalmute:
+    description: 'Chat stummschalten'
+    aliases: [gmute, mute]
+  mute:
+    description: 'Spieler stummschalten'
+  fly:
+    description: 'Fliegen an- oder ausschalten'
+  godmode:
+    description: 'Godmode an- oder ausschalten'
+    aliases: [god]
+  who:
+    description: 'Spieler Daten ansehen'
+    alises: [info, data]
+  permcheck:
+    description: 'Permissiom abfragen'

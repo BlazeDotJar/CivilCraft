@@ -10,6 +10,7 @@ import org.bukkit.event.server.ServerListPingEvent;
 
 import me.ichmagomaskekse.de.CivilCraft;
 import me.ichmagomaskekse.de.PlayerAtlas;
+import me.ichmagomaskekse.de.ProfileManager;
 import me.ichmagomaskekse.de.filesystem.FileManager;
 import me.ichmagomaskekse.de.permissions.PermissionManager;
 
@@ -31,13 +32,14 @@ public class ServerJoinAndLeaveListener implements Listener {
 	public void onJoin(PlayerJoinEvent e) {
 		PermissionManager.loadPermPlayer(e.getPlayer());
 		e.setJoinMessage(FileManager.join_message.replace("{USER}", e.getPlayer().getName()));
-		e.getPlayer().sendMessage("Hast du die Perm? "+e.getPlayer().hasPermission("civilcraft.join")); 
+		ProfileManager.registerProfile(e.getPlayer());
 	}
 	
 	@EventHandler
 	public void onLeave(PlayerQuitEvent e) {
 		e.setQuitMessage(FileManager.leave_message.replace("{USER}", e.getPlayer().getName()));
 		CivilCraft.mainLobby.unloadPlayer(e.getPlayer());
+		ProfileManager.unregisterProfile(e.getPlayer());
 	}
 	
 	@EventHandler

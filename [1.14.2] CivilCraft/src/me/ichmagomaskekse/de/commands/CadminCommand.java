@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.ichmagomaskekse.de.CivilCraft;
+import me.ichmagomaskekse.de.commands.functions.CPermFunctions;
 import me.ichmagomaskekse.de.filesystem.FileManager;
 import me.ichmagomaskekse.de.permissions.PermissionManager;
 

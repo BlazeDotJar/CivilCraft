@@ -1,4 +1,4 @@
-package me.ichmagomaskekse.de.commands;
+package me.ichmagomaskekse.de.commands.functions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -80,6 +80,9 @@ public class CPermFunctions {
 					}else if(args[2].equals("remove")) {
 						if(!PermissionManager.hasPermission(sender, "cadmin perms <PLAYER> remove")) return false;
 						sender.sendMessage("§cNutze §f/cadmin perms "+arg+" remove <§7Permission§f> §cum "+arg+" eine Permission zu entziehen");
+					}else if(args[2].equals("set")) {
+						if(!PermissionManager.hasPermission(sender, "cadmin perms <PLAYER> set")) return false;
+						sender.sendMessage("§cNutze §f/cadmin perms "+arg+" set g:<Perm-Group>");
 					}
 				}
 			}
@@ -114,11 +117,18 @@ public class CPermFunctions {
 					if(args[2].equals("add")) {
 						if(!PermissionManager.hasPermission(sender, "cadmin perms <PLAYER> add")) return false;
 						PermissionManager.getPermPlayer(PlayerAtlas.getUUIDbyName(arg)).addPermission(PermissionOrigin.OWN, args[3]);
-						CivilCraft.sendInfo(sender, "", args[3]+" wurde "+arg+" erteilt");
+						CivilCraft.sendInfo(sender, "", arg+" wurde "+args[3]+" erteilt");
 					}else if(args[2].equals("remove")) {
 						if(!PermissionManager.hasPermission(sender, "cadmin perms <PLAYER> remove")) return false;
 						PermissionManager.getPermPlayer(PlayerAtlas.getUUIDbyName(arg)).removePermission(args[3]);
-						CivilCraft.sendInfo(sender, "", args[3]+" wurde "+arg+" entzogen");
+						CivilCraft.sendInfo(sender, "", arg+" wurde "+args[3]+" entzogen");
+					}else if(args[2].equals("set")) {
+						if(!PermissionManager.hasPermission(sender, "cadmin perms <PLAYER> set")) return false;
+						if(args[3].startsWith("G:") || args[3].startsWith("g:") || args[3].startsWith("g.") || args[3].startsWith("G.")) {
+							String groupname = args[3].substring(2, args[3].length());
+							PermissionManager.getPermPlayer(PlayerAtlas.getUUIDbyName(arg)).setGroup(groupname);
+							CivilCraft.sendInfo(sender, "", "Gruppe §7"+groupname+"§f wurde gesetzt");
+						}
 					}
 				}
 			}
@@ -159,9 +169,9 @@ public class CPermFunctions {
 		sender.sendMessage("         §6"+FileManager.server_prefix+"s Permission-System");
 		sender.sendMessage(" /cadmin perms [...]");
 		sender.sendMessage("  list §aListet alle verfügbaren Permissions auf");
-		sender.sendMessage("  <Spielername> §aZeigt die alle Perms-Daten eines Spielers");
-		sender.sendMessage("  <Spielername> [add/remove] <Permission> §aPermission erteilen/entziehen");
 		sender.sendMessage("  <Spielername> §aZeigt alle Perms-Daten eines Spielers");
+		sender.sendMessage("  <Spielername> set g:<Perm-Group> §aPerm-Group setzen");
+		sender.sendMessage("  <Spielername> [add/remove] <Permission> §aPermission erteilen/entziehen");
 		sender.sendMessage("  groups §aZeigt alle erfassten Perm-Groups an");
 		sender.sendMessage("  g:<Gruppenname> create §aEine neue Gruppe erstellen");
 		sender.sendMessage("  g:<Gruppenname> [add/remove] <Permission> §aEiner Gruppe eine Permission erteilen/entziehen");
@@ -170,7 +180,8 @@ public class CPermFunctions {
 	
 	private static void listPermissions(CommandSender sender) {
 		sender.sendMessage("");
-		sender.sendMessage("§6"+FileManager.server_prefix+" Permissions:");
+		sender.sendMessage("§e"+FileManager.server_prefix+" Permissions:");
+		sender.sendMessage(" §7- [Command] §a[Permission]");
 		HashMap<String, String> perms = PermissionList.getPermissions();
 		for(String c : perms.keySet()) {
 			sender.sendMessage(" - " + c+" §a"+perms.get(c));

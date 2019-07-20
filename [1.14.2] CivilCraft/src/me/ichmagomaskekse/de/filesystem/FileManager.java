@@ -26,6 +26,7 @@ public class FileManager {
 	public static final String config_path = "plugins/CivilCraft/civilcraft.yml";
 	private static FileConfiguration cfg = null;
 	private static File config_file = null;
+	public static String player_not_found = "Dieser Spieler wurde nicht gefunden";
 	
 	public FileManager() {
 		config_file = new File(config_path);

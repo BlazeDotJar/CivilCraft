@@ -32,7 +32,10 @@ public class PermissionManager {
 	
 	
 	public PermissionManager() {
+		CivilCraft.sendErrorInfo(Bukkit.getConsoleSender(), "Permission Manager", "///////////////////////////////////////////////////////////////",
+				"CivilCraft coded by IchMagOmasKekse", "///////////////////////////////////////////////////////////////");
 		reloadData();
+		CivilCraft.sendErrorInfo(Bukkit.getConsoleSender(), "Permission Manager", "Registered Groups: "+loaded_groups.size(), "Registered Players: "+permPlayers.size());
 	}
 	
 	//Prozess: Gruppen werden geladen
@@ -41,39 +44,27 @@ public class PermissionManager {
 		for(String s : PermissionManager.groups_cfg.getStringList("Permissions.groups")) PermissionManager.registered_group_names.add(s);
 	}
 	//Lädt eine Gruppe und gibt sie zurück
-	public static PermGroup loadGroup(String name) {
+	public static PermGroup loadGroup(String groupname) {
+		loadGroupNames();
 		boolean success = true;
-		CivilCraft.sendBroadcast("", "NAME: "+name);
-		if(registered_group_names.contains(name)) {
-			if(loaded_groups.containsKey(name)) {
-				PermGroup pgroup = loaded_groups.get(name);
-				pgroup.loadInherits();
-				CivilCraft.sendBroadcast("", "Group "+name+" loaded and returned");
+		if(registered_group_names.contains(groupname)) {
+			if(loaded_groups.containsKey(groupname)) {
+				PermGroup pgroup = loaded_groups.get(groupname);
+				pgroup.loadData();
 				return pgroup;
 			}else success = false;
-		}
+		}else success = false;
+		
 		if(success == false) {			
-			PermGroup pgroup = new PermGroup(name);
-			pgroup.loadInherits();
-			loaded_groups.put(name, pgroup);
-			CivilCraft.sendBroadcast("", "Group "+name+" returned");
+			PermGroup pgroup = new PermGroup(groupname);
+			loaded_groups.put(groupname, pgroup);
 			return pgroup;
 		}else {
-			CivilCraft.sendBroadcast("", "Returning null");
 			return null;
 		}
 	}
-//	public static void loadGroups() {
-//		PermissionManager.loaded_groups.clear();
-//		//Gruppen werden geladen
-//		for(String s : registered_group_names) {
-//			loaded_groups.put(s, new PermGroup(s));
-//		}
-//	}
 	public static void loadGroupInherits() {
-		for(String s : PermissionManager.loaded_groups.keySet()) {
-			PermissionManager.loaded_groups.get(s).loadInherits();
-		}
+		for(PermGroup pg : PermissionManager.loaded_groups.values()) pg.loadInherits();
 	}
 	//-------
 	
@@ -87,16 +78,15 @@ public class PermissionManager {
 	public static void reloadData() {
 		//Ladet alle Daten neu
 		for(PermPlayer pp : permPlayers.values()) pp.unsetPermissions();
+		permPlayers.clear();
 		PermissionManager.groups_file = new File(PermissionManager.groups_path);
 		PermissionManager.player_data_file = new File(PermissionManager.player_data_path);
 		PermissionManager.groups_cfg = YamlConfiguration.loadConfiguration(PermissionManager.groups_file);
 		PermissionManager.player_data_cfg= YamlConfiguration.loadConfiguration(PermissionManager.player_data_file);
 		loadGroupNames();
-//		loadGroups();
-//		loadGroupInherits();
+//		loadGroups(); UNNÖTIG
+//		loadGroupInherits(); UNNÖTIG
 		loadPermPlayers();
-//		CivilCraft.sendInfo(Bukkit.getConsoleSender(), "Permission Manager", "Es wurden folgende Gruppen geladen: "+PermissionManager.registered_group_names.toString());
-//		CivilCraft.sendInfo(Bukkit.getConsoleSender(), "Permission Manager", "Es wurden folgende Spieler geladen: "+PermissionManager.permPlayers.toString());
 	}
 	public static void disable() {
 		for(PermPlayer pp : permPlayers.values()) {
@@ -142,6 +132,7 @@ public class PermissionManager {
 		else return new PermPlayer(uuid);
 	}
 	public static PermGroup getPermGroup(String groupname) {
+		if(loaded_groups.containsKey(groupname) == false) loadGroup(groupname);
 		return loaded_groups.get(groupname);
 	}
 	
@@ -149,7 +140,7 @@ public class PermissionManager {
 		public UUID uuid = null;
 		public Player player = null;
 		public PermGroup group = null; //Es kann nur 1ne Gruppe zugeteilt werden, damit es keine Probleme beim Anzeigen des Prefixes gibt
-//		public ArrayList<String> permissions = new ArrayList<String>();
+		public int amount_permissions = 0;//Zum Überprüfen, ob ein Speichervorgang nötig ist
 		public HashMap<String, PermissionOrigin> permissions = new HashMap<String, PermissionOrigin>();
 		private PermissionAttachment attachment = null;
 		public PermissionAttachment getAttachment() {
@@ -160,17 +151,11 @@ public class PermissionManager {
 			initPlayer();
 			registerPlayer(uuid, false);
 			loadData();
-			CivilCraft.sendInfo(Bukkit.getConsoleSender(), "PermPlayer Loading", "§6"+uuid.toString()+" wurde geladen");
-			CivilCraft.sendInfo(Bukkit.getConsoleSender(), "PermPlayer Loading", "§6Gruppe: "+group.groupname);
-			CivilCraft.sendInfo(Bukkit.getConsoleSender(), "PermPlayer Loading", "§6Permissions(PLAYER): "+permissions.toString());			
-			CivilCraft.sendInfo(Bukkit.getConsoleSender(), "PermPlayer Loading", "§6Permissions(GROUP): "+group.permissions.toString());			
-			CivilCraft.sendInfo(Bukkit.getConsoleSender(), "PermPlayer Loading", "§6Permissions(GROUP-ANTI): "+group.anti_permissions.toString());			
-		}
-		
-		public void unsetPermissions() {
-			for(String s : permissions.keySet()) attachment.setPermission(s, false);
-			for(String s : group.permissions) attachment.setPermission(s, false);
-			for(String s : group.anti_permissions) attachment.setPermission(s, false);
+			CivilCraft.sendInfo(Bukkit.getConsoleSender(), "PermPlayer Loading", "§e"+uuid.toString()+" wurde geladen");
+			CivilCraft.sendInfo(Bukkit.getConsoleSender(), "PermPlayer Loading", "§eGruppe: §8"+group.groupname);
+			CivilCraft.sendInfo(Bukkit.getConsoleSender(), "PermPlayer Loading", "§ePermissions(PLAYER): §8"+permissions.toString());			
+			CivilCraft.sendInfo(Bukkit.getConsoleSender(), "PermPlayer Loading", "§ePermissions(GROUP): §8"+group.permissions.toString());			
+			CivilCraft.sendInfo(Bukkit.getConsoleSender(), "PermPlayer Loading", "§ePermissions(GROUP-ANTI): §8"+group.anti_permissions.toString());			
 		}
 		
 		public void initPlayer() {
@@ -187,10 +172,9 @@ public class PermissionManager {
 			
 			boolean bypass = false;
 			if(overwrite == false) {
-				if(uuid == null) Bukkit.broadcastMessage("uuid == null");
 				if(PermissionManager.player_data_cfg.getString("Players."+uuid.toString()+".group") == null) bypass = true;
 			}
-			if(bypass || overwrite) {				
+			if(bypass || overwrite) {
 				ArrayList<String> list = new ArrayList<String>();
 				list.add("beispiel.permission");
 				PermissionManager.player_data_cfg.set("Players."+uuid.toString()+".group", "player");
@@ -202,12 +186,11 @@ public class PermissionManager {
 		}
 
 		public boolean loadData() {
+			PermissionManager.player_data_cfg = YamlConfiguration.loadConfiguration(PermissionManager.player_data_file);
 			if(PermissionManager.player_data_cfg.getString("Players."+this.uuid.toString()+".group") == null) registerPlayer(this.uuid, true);
 			
 			String group_name = PermissionManager.player_data_cfg.getString("Players."+this.uuid.toString()+".group");
-			if(group_name == null) CivilCraft.sendErrorInfo(Bukkit.getConsoleSender(), "", "name ======== NULL");
 			group = loadGroup(group_name);
-			group.loadInherits();
 			
 			for(String s : PermissionManager.player_data_cfg.getStringList("Players."+this.uuid.toString()+".permissions")) {
 				if(s == null) break;
@@ -221,11 +204,6 @@ public class PermissionManager {
 			//Permissions werden gesetzt
 			if(attachment != null) {
 				refreshGroupData(group);
-				for(String s : permissions.keySet()) {
-					attachment.setPermission(s, true);
-				}
-				for(String s : group.permissions) attachment.setPermission(s, true);
-				for(String s : group.anti_permissions) attachment.setPermission(s, false);
 			}
 			return true;
 		}
@@ -243,32 +221,63 @@ public class PermissionManager {
 			attachment.setPermission(permission, false);
 			saveData(true);
 		}
+		public void unsetPermissions() {
+			for(String s : permissions.keySet()) attachment.setPermission(s, false);
+			for(String s : group.permissions) attachment.setPermission(s, false);
+			for(String s : group.anti_permissions) attachment.setPermission(s.substring(1, s.length()), false);
+		}
+		public boolean setPermissions() {
+			if(attachment == null) return false;
+			for(String s : permissions.keySet()) attachment.setPermission(s, true);
+			for(String s : group.permissions) attachment.setPermission(s, true);
+			for(String s : group.anti_permissions) attachment.setPermission(s.substring(1, s.length()), false);
+			return true;
+		}
+		public void setGroup(String groupname) {
+			unsetPermissions();
+			group = loadGroup(groupname);
+			PermissionManager.player_data_file = new File(PermissionManager.player_data_path);
+			PermissionManager.player_data_cfg = YamlConfiguration.loadConfiguration(PermissionManager.player_data_file);
+			PermissionManager.player_data_cfg.set("Players."+uuid.toString()+".group", group.groupname);
+			try {
+				PermissionManager.player_data_cfg.save(PermissionManager.player_data_file);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			refreshGroupData(group);
+		}
 		
 		public void refreshGroupData(PermGroup sender) {
-			if(sender.groupname.equals(group.groupname)) {
-				for(String s : group.permissions) {
-					attachment.setPermission(s, true);
-					if(permissions.containsValue(s) == false) permissions.put(s, PermissionOrigin.GROUP);
-				}
-				for(String s : group.anti_permissions) {
-					attachment.setPermission(s, false);
+			if(sender == group || sender.groupname.equals(group.groupname)) {
+				group = sender;
+				unsetPermissions();
+				for(String s : group.permissions) permissions.put(s, PermissionOrigin.GROUP);
+				for(String s : group.anti_permissions) permissions.put(s, PermissionOrigin.GROUP);
+				if(group.inherit.isEmpty() == false) for(PermGroup pg : group.inherit) {
+					for(String s : pg.permissions) if(pg != null) permissions.put(s, PermissionOrigin.GROUP);
 				}
 				group.prefix = sender.prefix;
 				group.suffix = sender.suffix;
+				setPermissions();
 			}
 		}
 		
 		public boolean saveData(boolean overwrite) {
-			ArrayList<String> perms = new ArrayList<String>();
-			for(String s : permissions.keySet()) perms.add(s);
-			PermissionManager.player_data_cfg.set("Players."+this.uuid.toString()+".permissions",perms);
-			try {
-				PermissionManager.player_data_cfg.save(PermissionManager.player_data_file);
-				return true;
-			} catch (IOException e) {
-				e.printStackTrace();
-				return false;
+			if(overwrite || (amount_permissions != permissions.size())) {				
+				PermissionManager.player_data_file = new File(PermissionManager.player_data_path);
+				ArrayList<String> perms = new ArrayList<String>();
+				for(String s : permissions.keySet()) if(permissions.get(s) == PermissionOrigin.OWN) perms.add(s);				
+				PermissionManager.player_data_cfg.set("Players."+this.uuid.toString()+".permissions",perms);
+				try {
+					PermissionManager.player_data_cfg.save(PermissionManager.player_data_file);
+					amount_permissions = permissions.size();
+					return true;
+				} catch (IOException e) {
+					e.printStackTrace();
+					return false;
+				}
 			}
+			return true;
 		}
 
 	}
@@ -278,6 +287,9 @@ public class PermissionManager {
 		public String groupname = "{FEHLER}";
 		public String prefix = "";
 		public String suffix = "";
+		public int amount_permissions = 0;
+		public int amount_anti_permissions = 0;
+		public int amount_inherit = 0;
 		public ArrayList<String> permissions = new ArrayList<String>();
 		public ArrayList<String> anti_permissions = new ArrayList<String>();
 		public ArrayList<PermGroup> inherit = new ArrayList<PermGroup>();
@@ -286,6 +298,7 @@ public class PermissionManager {
 			if(PermissionManager.registered_group_names.contains(groupname)) {
 				this.groupname = groupname;
 				loadData();
+				loadInherits();
 			}else{
 				CivilCraft.sendErrorInfo(Bukkit.getConsoleSender(), "PermGroup", "Es wurde versucht die Gruppe '"+groupname+"' zu laden," ,"obwohl sie noch nicht existiert");
 				return;
@@ -326,11 +339,14 @@ public class PermissionManager {
 		}
 		public void loadData() {
 			CivilCraft.sendInfo(Bukkit.getConsoleSender(), "PermGroup", "§2Gruppe '"+groupname+"' wird geladen...");
+			PermissionManager.groups_cfg = YamlConfiguration.loadConfiguration(PermissionManager.groups_file);
 			FileConfiguration c = PermissionManager.groups_cfg;
 			this.prefix = c.getString("Permissions."+groupname+".prefix").replace("&", "§");
 			this.suffix = c.getString("Permissions."+groupname+".suffix").replace("&", "§");
 			
 			this.permissions = new ArrayList<String>();
+			this.anti_permissions = new ArrayList<String>();
+			this.inherit = new ArrayList<PermGroup>();
 			//Anti-Permissions werden aus den Permissions rausgefiltert
 			for(String s : c.getStringList("Permissions."+groupname+".permissions")) {
 				if(s.startsWith("-")) this.anti_permissions.add(s);
@@ -339,21 +355,23 @@ public class PermissionManager {
 			/*
 			 * Inherits werden extra geladen
 			 */
+			amount_permissions = permissions.size();
+			amount_anti_permissions = anti_permissions.size();
+			amount_inherit = inherit.size();
 			CivilCraft.sendInfo(Bukkit.getConsoleSender(), "PermGroup", "§aGruppe '"+groupname+"' wurde geladen");
+			CivilCraft.sendInfo(Bukkit.getConsoleSender(), "PermGroup", "§aPermissions size: "+amount_permissions);
 		}
 		public void loadInherits() {
+			PermissionManager.groups_cfg = YamlConfiguration.loadConfiguration(PermissionManager.groups_file);
 			ArrayList<String> in = (ArrayList<String>) PermissionManager.groups_cfg.getStringList("Permissions."+groupname+".inherit");
-			for(String s : in) {
-				this.inherit.add(PermissionManager.loaded_groups.get(s));
-			}
+//			inherit.clear();
+//			for(String s : in) this.inherit.add(loadGroup(s));
 			for(PermGroup pg : this.inherit) {
 				if(pg == null) {
 					CivilCraft.sendErrorInfo(Bukkit.getConsoleSender(), "PermGroup", "Inherit = NULL; List.Size: "+this.inherit.size());
 					break;
 				}
-				for(String perm : pg.permissions) {
-					if(permissions.contains(perm) == false) permissions.add(perm);
-				}
+				pg.loadData();
 				//Anti-Permissions werden nicht übernommen, weil das kein Sinn macht, wenn ein Admin kein /Cadmin machen darf
 				//nur weil ein Player es nicht kann
 			}
@@ -382,25 +400,34 @@ public class PermissionManager {
 		public void removePermission(String perm) {
 			if(perm.startsWith("-")) anti_permissions.remove(perm);
 			else permissions.remove(perm);
-			for(UUID uuid : permPlayers.keySet()) PermissionManager.getPermPlayer(uuid).refreshGroupData(this);
 			saveData(true);
+			for(UUID uuid : permPlayers.keySet()) PermissionManager.getPermPlayer(uuid).refreshGroupData(this);
 		}
 		public boolean saveData(boolean overwrite) {
-			PermissionManager.groups_cfg = YamlConfiguration.loadConfiguration(PermissionManager.groups_file);
-			PermissionManager.groups_cfg.set("Permissions."+groupname+".prefix", prefix.replace("§", "&"));
-			PermissionManager.groups_cfg.set("Permissions."+groupname+".suffix", suffix.replace("§", "&"));
-			@SuppressWarnings("unchecked")
-			ArrayList<String> list = (ArrayList<String>) permissions.clone();
-			list.addAll(anti_permissions);
-			PermissionManager.groups_cfg.set("Permissions."+groupname+".permissions", list);
-			PermissionManager.groups_cfg.set("Permissions."+groupname+".inherit", inherit);
-			try {
-				PermissionManager.groups_cfg.save(PermissionManager.groups_file);
-				return true;
-			} catch (IOException e) {
-				e.printStackTrace();
-				return false;
+			if((amount_permissions != permissions.size() || amount_anti_permissions != anti_permissions.size() || amount_inherit != inherit.size())) {
+				PermissionManager.groups_cfg = YamlConfiguration.loadConfiguration(PermissionManager.groups_file);
+				PermissionManager.groups_cfg.set("Permissions."+groupname+".prefix", PermissionManager.groups_cfg.getString("Permissions."+groupname+".prefix"));
+				PermissionManager.groups_cfg.set("Permissions."+groupname+".suffix", PermissionManager.groups_cfg.getString("Permissions."+groupname+".suffix"));
+				
+				ArrayList<String> list = new ArrayList<String>();
+				for(PermGroup pg : inherit) list.add(pg.groupname);
+				PermissionManager.groups_cfg.set("Permissions."+groupname+".inherit", list.clone());
+				list.clear();
+				list = permissions;
+				list.addAll(anti_permissions);
+				PermissionManager.groups_cfg.set("Permissions."+groupname+".permissions", list.clone());
+				try {
+					PermissionManager.groups_cfg.save(PermissionManager.groups_file);
+					amount_permissions = permissions.size();
+					amount_anti_permissions = anti_permissions.size();
+					amount_inherit = inherit.size();
+					return true;
+				} catch (IOException e) {
+					e.printStackTrace();
+					return false;
+				}				
 			}
+			return true;
 		}
 	}
 	
