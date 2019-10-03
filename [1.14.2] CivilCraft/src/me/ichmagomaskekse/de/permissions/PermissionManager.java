@@ -363,7 +363,7 @@ public class PermissionManager {
 		}
 		public void loadInherits() {
 			PermissionManager.groups_cfg = YamlConfiguration.loadConfiguration(PermissionManager.groups_file);
-			ArrayList<String> in = (ArrayList<String>) PermissionManager.groups_cfg.getStringList("Permissions."+groupname+".inherit");
+//			ArrayList<String> in = (ArrayList<String>) PermissionManager.groups_cfg.getStringList("Permissions."+groupname+".inherit");
 //			inherit.clear();
 //			for(String s : in) this.inherit.add(loadGroup(s));
 			for(PermGroup pg : this.inherit) {

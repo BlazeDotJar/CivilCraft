@@ -1,1 +1,2 @@
-Pfad 'Players.UUID.group' wird als NULL ausgelesen, obwohl zu 100% dort etwas drinnen steht
+Area-System angefangen.
+Das ist ein System wie 'Protectete Zonen' aka WorldGuard
