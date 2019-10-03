@@ -33,6 +33,8 @@ import me.ichmagomaskekse.de.permissions.PermissionList;
 import me.ichmagomaskekse.de.permissions.PermissionManager;
 import me.ichmagomaskekse.de.scoreboard.CScoreboard;
 import me.ichmagomaskekse.de.scoreboard.CTablist;
+import me.ichmagomaskekse.de.stats.CStats;
+import me.ichmagomaskekse.de.stats.StatListener;
 
 public class CivilCraft extends JavaPlugin {
 	
@@ -50,6 +52,7 @@ public class CivilCraft extends JavaPlugin {
 	public BackupManager backupManager = null;
 	public CScoreboard csb = null;
 	public CTablist ctl = null;
+	public CStats cstats = null;
 	
 	public static Lobby mainLobby = new Lobby(1);
 	
@@ -91,6 +94,7 @@ public class CivilCraft extends JavaPlugin {
 		backupManager.createBackup();
 		csb = new CScoreboard();
 		ctl = new CTablist();
+		cstats = new CStats();
 		
 		command_spawn = new SpawnCommand();
 	}
@@ -101,6 +105,7 @@ public class CivilCraft extends JavaPlugin {
 		new BlockBreakListener();
 		new DamageListener();
 		new PermListener();
+		new StatListener();
 		
 		//Commands
 		getCommand("backup").setExecutor(new BackupCommand());

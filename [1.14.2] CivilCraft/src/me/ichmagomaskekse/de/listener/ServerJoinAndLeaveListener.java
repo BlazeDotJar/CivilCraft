@@ -4,8 +4,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 
 import me.ichmagomaskekse.de.CivilCraft;
@@ -22,7 +22,9 @@ public class ServerJoinAndLeaveListener implements Listener {
 	
 	@EventHandler
 	public void onLogin(PlayerLoginEvent e) {
+		/* Spieler Profile wird registriert */
 		PlayerAtlas.registerPlayer(e.getPlayer());
+		/* Die Lobby wird gefragt, ob der Spieler joinen darf */
 		if(CivilCraft.mainLobby.requestJoin(e.getPlayer()) == false) {
 			e.disallow(Result.KICK_OTHER, "§cKeine freie Lobby gefunden!\nVersuche es später erneut");
 		}
@@ -30,17 +32,26 @@ public class ServerJoinAndLeaveListener implements Listener {
 	
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e) {
+		/* Permission Profile des Spielers wird geladen */
 		PermissionManager.loadPermPlayer(e.getPlayer());
-		e.setJoinMessage(FileManager.join_message.replace("{USER}", e.getPlayer().getName()));
+		/* SpielerProfile werden geladen */
 		ProfileManager.registerProfile(e.getPlayer());
-		/* Nur für Test-Zwecke */CivilCraft.getInstance().csb.setNewScoreboard(e.getPlayer());
+		/* Statistiken Profile wird geladen */
+		CivilCraft.getInstance().cstats.registerStats(e.getPlayer());
+		/* Display-Technische Logiken */
+		CivilCraft.getInstance().csb.updateScoreboard(e.getPlayer());
+		CivilCraft.getInstance().ctl.setTablist(e.getPlayer());
+		/* Join Nachricht wirdangepasst */
+		e.setJoinMessage(FileManager.join_message.replace("{USER}", e.getPlayer().getName()));
 	}
 	
 	@EventHandler
 	public void onLeave(PlayerQuitEvent e) {
-		e.setQuitMessage(FileManager.leave_message.replace("{USER}", e.getPlayer().getName()));
+		/* Spieler Profil wird entladen*/
 		CivilCraft.mainLobby.unloadPlayer(e.getPlayer());
 		ProfileManager.unregisterProfile(e.getPlayer());
+		/* Leave Nachricht wird angepasst */
+		e.setQuitMessage(FileManager.leave_message.replace("{USER}", e.getPlayer().getName()));
 	}
 	
 	@EventHandler
@@ -48,5 +59,6 @@ public class ServerJoinAndLeaveListener implements Listener {
 		e.setMotd(FileManager.MOTD);
 		e.setMaxPlayers(FileManager.server_slots);
 	}
+	
 	
 }

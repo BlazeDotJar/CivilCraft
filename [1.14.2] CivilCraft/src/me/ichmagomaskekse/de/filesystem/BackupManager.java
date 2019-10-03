@@ -21,6 +21,7 @@ public class BackupManager {
 		paths.put("plugins/CivilCraft/Permissions/groups.yml",  backup_path+"{DATE}/Permissions/groups.yml");
 		paths.put("plugins/CivilCraft/Permissions/players.yml", backup_path+"{DATE}/Permissions/players.yml");
 		paths.put("plugins/CivilCraft/Teleportation/spawn.yml", backup_path+"{DATE}/Teleportation/spawn.yml");
+		paths.put("plugins/CivilCraft/Stats/stats.yml", backup_path+"{DATE}/Stats/stats.yml");
 	}
 	
 	public void createBackup(String target_name) {

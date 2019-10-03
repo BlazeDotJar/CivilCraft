@@ -1,2 +1,5 @@
 Area-System angefangen.
 Das ist ein System wie 'Protectete Zonen' aka WorldGuard
+
+CSTats:
+- Die Stats werden noch nicht in Datein gespeichert und Scoreboard zeigt nicht dir richtigen Werte an
