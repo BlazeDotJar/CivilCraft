@@ -304,7 +304,7 @@ public class PermissionManager {
 				return;
 			}
 		}
-		public PermGroup(String groupname, boolean create)  {
+		public PermGroup(String groupname, boolean create) throws IOException {
 			if(create && registered_group_names.contains(groupname) == false) {
 				registered_group_names.add(groupname);
 				CivilCraft.sendInfo(Bukkit.getConsoleSender(), "PermGroup", "Gruppe '§6"+groupname+"§f' wird erstellt..");

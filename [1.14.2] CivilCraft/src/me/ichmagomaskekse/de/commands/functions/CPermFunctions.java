@@ -1,9 +1,11 @@
 package me.ichmagomaskekse.de.commands.functions;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -15,6 +17,8 @@ import me.ichmagomaskekse.de.permissions.PermissionManager;
 import me.ichmagomaskekse.de.permissions.PermissionManager.PermGroup;
 import me.ichmagomaskekse.de.permissions.PermissionManager.PermPlayer;
 import me.ichmagomaskekse.de.permissions.PermissionManager.PermissionOrigin;
+import me.ichmagomaskekse.de.permissions.events.PermGroupCreatedEvent;
+import me.ichmagomaskekse.de.permissions.events.PermPlayerGroupSetEvent;
 
 public class CPermFunctions {
 	//Diese Methode wird nur aufgerufen, wenn das 1te Argument eines Command 'perms' lautet
@@ -60,8 +64,15 @@ public class CPermFunctions {
 					sender.sendMessage("§cNutze §f/cadmin perms G:"+group+" remove <§7Permission§f> §cum Gruppe "+group+" eine Permission zu entziehen");
 				}else if(args[2].equals("create")) {
 					if(!PermissionManager.hasPermission(sender, "cadmin perms <GROUP> create")) return false;
-					new PermGroup(group, true);
-					CivilCraft.sendInfo(sender, "", "Gruppe §7"+group+" §fwurde erstellt");
+					try {
+						new PermGroup(group, true);
+						CivilCraft.sendInfo(sender, "", "Gruppe §7"+group+" §fwurde erstellt");
+						Bukkit.getPluginManager().callEvent(new PermGroupCreatedEvent(sender, group, true));
+					} catch (IOException e) {
+						CivilCraft.sendInfo(sender, "", "§cGruppe §7"+group+" §ckonnte nicht erstellt werden");
+						Bukkit.getPluginManager().callEvent(new PermGroupCreatedEvent(sender, group, false));
+						e.printStackTrace();
+					}
 				}else if(args[2].equals("prefix")) {
 					if(!PermissionManager.hasPermission(sender, "cadmin perms <GROUP> prefix")) return false;
 					sender.sendMessage("§cNutze §f/cadmin perms "+group+" prefix §<Prefix> set §cum den Prefix zu ändern");
@@ -127,6 +138,7 @@ public class CPermFunctions {
 						if(args[3].startsWith("G:") || args[3].startsWith("g:") || args[3].startsWith("g.") || args[3].startsWith("G.")) {
 							String groupname = args[3].substring(2, args[3].length());
 							PermissionManager.getPermPlayer(PlayerAtlas.getUUIDbyName(arg)).setGroup(groupname);
+							Bukkit.getServer().getPluginManager().callEvent(new PermPlayerGroupSetEvent(sender, arg, groupname, true));
 							CivilCraft.sendInfo(sender, "", "Gruppe §7"+groupname+"§f wurde gesetzt");
 						}
 					}

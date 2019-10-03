@@ -26,10 +26,13 @@ import me.ichmagomaskekse.de.filesystem.FileManager;
 import me.ichmagomaskekse.de.listener.BlockBreakListener;
 import me.ichmagomaskekse.de.listener.ChatListener;
 import me.ichmagomaskekse.de.listener.DamageListener;
+import me.ichmagomaskekse.de.listener.PermListener;
 import me.ichmagomaskekse.de.listener.ServerJoinAndLeaveListener;
 import me.ichmagomaskekse.de.lobby.Lobby;
 import me.ichmagomaskekse.de.permissions.PermissionList;
 import me.ichmagomaskekse.de.permissions.PermissionManager;
+import me.ichmagomaskekse.de.scoreboard.CScoreboard;
+import me.ichmagomaskekse.de.scoreboard.CTablist;
 
 public class CivilCraft extends JavaPlugin {
 	
@@ -45,6 +48,8 @@ public class CivilCraft extends JavaPlugin {
 	public ProfileManager profileManager = null;
 	public static SpawnCommand command_spawn = null;
 	public BackupManager backupManager = null;
+	public CScoreboard csb = null;
+	public CTablist ctl = null;
 	
 	public static Lobby mainLobby = new Lobby(1);
 	
@@ -84,6 +89,8 @@ public class CivilCraft extends JavaPlugin {
 		profileManager = new ProfileManager();
 		backupManager = new BackupManager();
 		backupManager.createBackup();
+		csb = new CScoreboard();
+		ctl = new CTablist();
 		
 		command_spawn = new SpawnCommand();
 	}
@@ -93,6 +100,7 @@ public class CivilCraft extends JavaPlugin {
 		new ChatListener();
 		new BlockBreakListener();
 		new DamageListener();
+		new PermListener();
 		
 		//Commands
 		getCommand("backup").setExecutor(new BackupCommand());
@@ -154,6 +162,11 @@ public class CivilCraft extends JavaPlugin {
 //		PermissionManager.loadPermPlayers();
 		//Spawn Location laden
 		command_spawn.loadSpawnLocation();
+		
+		for(Player all : Bukkit.getOnlinePlayers()) {
+			csb.setNewScoreboard(all);
+			ctl.setTablist(all);
+		}
 	}
 	
 	//Registriert die Events bei Bukkit

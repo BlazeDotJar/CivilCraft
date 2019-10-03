@@ -33,6 +33,7 @@ public class ServerJoinAndLeaveListener implements Listener {
 		PermissionManager.loadPermPlayer(e.getPlayer());
 		e.setJoinMessage(FileManager.join_message.replace("{USER}", e.getPlayer().getName()));
 		ProfileManager.registerProfile(e.getPlayer());
+		/* Nur für Test-Zwecke */CivilCraft.getInstance().csb.setNewScoreboard(e.getPlayer());
 	}
 	
 	@EventHandler

@@ -24,16 +24,16 @@ Permissions:
   - player
 # Standart Developer Gruppe
   developer:
-    prefix: '&9Developer &f>&9'
-    suffix: '&f:'
+    prefix: '&9Developer'
+    suffix: ' &f>&f:'
     inherit:
     - admin
     permissions:
     - '*'
 # Standart Admin Gruppe
   admin:
-    prefix: '&cAdmin &f>&c'
-    suffix: '&f:'
+    prefix: '&cAdmin'
+    suffix: ' &f>&f:'
     inherit:
     - player
     permissions:
@@ -42,8 +42,8 @@ Permissions:
     - civilcraft.chat.mute.bypass
 # Standart Spieler Gruppe
   player:
-    prefix: '&7Spieler &f>&7'
-    suffix: '&8:'
+    prefix: '&7Spieler'
+    suffix: ' &f>&8:'
     inherit: []
     permissions:
     - -*
