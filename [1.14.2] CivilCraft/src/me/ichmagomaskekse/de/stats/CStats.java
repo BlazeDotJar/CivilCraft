@@ -100,17 +100,19 @@ public class CStats implements Listener{
 	@EventHandler
 	public void onKill(EntityDeathEvent e) {
 		killer = e.getEntity().getKiller();
-		if(e.getEntity() instanceof Monster) {
-			getStats(killer.getUniqueId()).hostile_kills+=1;
-			Bukkit.getPluginManager().callEvent(new StatsUpdateEvent(killer, "hostile_kills"));
-		}else if(e.getEntity() instanceof Animals) {
-			getStats(killer.getUniqueId()).friendly_kills+=1;
-			Bukkit.getPluginManager().callEvent(new StatsUpdateEvent(killer, "friendly_kills"));
-		}else if(e.getEntity() instanceof Player) {
-			getStats(killer.getUniqueId()).player_kills+=1;
-			Bukkit.getPluginManager().callEvent(new StatsUpdateEvent(killer, "player_kills"));
+		if(killer != null) {			
+			if(e.getEntity() instanceof Monster) {
+				getStats(killer.getUniqueId()).hostile_kills+=1;
+				Bukkit.getPluginManager().callEvent(new StatsUpdateEvent(killer, "hostile_kills"));
+			}else if(e.getEntity() instanceof Animals) {
+				getStats(killer.getUniqueId()).friendly_kills+=1;
+				Bukkit.getPluginManager().callEvent(new StatsUpdateEvent(killer, "friendly_kills"));
+			}else if(e.getEntity() instanceof Player) {
+				getStats(killer.getUniqueId()).player_kills+=1;
+				Bukkit.getPluginManager().callEvent(new StatsUpdateEvent(killer, "player_kills"));
+			}
+			CivilCraft.getInstance().csb.setNewScoreboard(killer);
 		}
-		CivilCraft.getInstance().csb.setNewScoreboard(killer);
 	}
 	
 	@EventHandler

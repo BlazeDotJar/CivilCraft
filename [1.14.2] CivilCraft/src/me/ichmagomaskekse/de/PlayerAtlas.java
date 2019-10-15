@@ -31,6 +31,7 @@ public class PlayerAtlas {
 		return name;
 	}
 	public static void registerPlayer(Player p) {
+		PlayerAtlas.atlas_file = new File("plugins/CivilCraft/player_atlas.yml");
 		PlayerAtlas.atlas_cfg = YamlConfiguration.loadConfiguration(PlayerAtlas.atlas_file);
 		PlayerAtlas.atlas_cfg.set(p.getUniqueId().toString(), p.getName());
 		PlayerAtlas.atlas_cfg.set(p.getName(), p.getUniqueId().toString());

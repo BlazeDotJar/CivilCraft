@@ -36,11 +36,14 @@ public class ServerJoinAndLeaveListener implements Listener {
 		PermissionManager.loadPermPlayer(e.getPlayer());
 		/* SpielerProfile werden geladen */
 		ProfileManager.registerProfile(e.getPlayer());
+		ProfileManager.getProfile(e.getPlayer()).saveData();
 		/* Statistiken Profile wird geladen */
 		CivilCraft.getInstance().cstats.registerStats(e.getPlayer());
 		/* Display-Technische Logiken */
-		CivilCraft.getInstance().csb.updateScoreboard(e.getPlayer());
+		CivilCraft.getInstance().csb.setNewScoreboard(e.getPlayer());
 		CivilCraft.getInstance().ctl.setTablist(e.getPlayer());
+		/* Gamemode setzen */
+		e.getPlayer().setGameMode(ProfileManager.getProfile(e.getPlayer()).current_gamemode);
 		/* Join Nachricht wirdangepasst */
 		e.setJoinMessage(FileManager.join_message.replace("{USER}", e.getPlayer().getName()));
 	}

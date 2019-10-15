@@ -52,6 +52,7 @@ public class SpawnCommand implements CommandExecutor {
 					cfg.set("Spawn.World", loc.getWorld().getName());
 					try {
 						cfg.save(spawn_file);
+						loadSpawnLocation();
 						CivilCraft.sendInfo(p, "", "Spawn wurde gesetzt");
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -76,6 +77,10 @@ public class SpawnCommand implements CommandExecutor {
 		pitch = (float) cfg.getInt("Spawn.Pitch");
 		world = cfg.getString("Spawn.World");
 		this.spawn_location = new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
+	}
+	
+	public Location getSpawnLocation() {
+		return this.spawn_location;
 	}
 	
 }

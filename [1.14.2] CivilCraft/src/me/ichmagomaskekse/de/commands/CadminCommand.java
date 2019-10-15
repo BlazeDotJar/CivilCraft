@@ -57,6 +57,7 @@ public class CadminCommand implements CommandExecutor {
 	}
 	
 	public void sendCadminInfo(CommandSender sender) {
+		sender.sendMessage("              §aCivilCraft Funktionen");
 		sender.sendMessage("§f/cadmin §aHauptbefehl für "+FileManager.server_prefix);
 		sender.sendMessage("§f/cadmin reload §aLade alle Daten neu");
 		sender.sendMessage("§f/cadmin perms §aCivilCraft Permission-System");

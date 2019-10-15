@@ -30,6 +30,7 @@ Permissions:
     - admin
     permissions:
     - '*'
+    - areas.help
 # Standart Admin Gruppe
   admin:
     prefix: '&cAdmin'
@@ -40,6 +41,7 @@ Permissions:
     - -*
     - civilcraft.chat.mute
     - civilcraft.chat.mute.bypass
+    - areas.help
 # Standart Spieler Gruppe
   player:
     prefix: '&7Spieler'

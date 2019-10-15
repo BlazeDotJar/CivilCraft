@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 
 import me.ichmagomaskekse.de.CivilCraft;
+import me.ichmagomaskekse.de.filesystem.FileManager;
 
 public class PermissionManager {
 	
@@ -101,7 +102,7 @@ public class PermissionManager {
 	//Ladet die PermPlayer Daten
 	public static void loadPermPlayer(Player p) {
 		permPlayers.put(p.getUniqueId(), new PermPlayer(p.getUniqueId()));
-		for(UUID id : permPlayers.keySet()) p.sendMessage(id.toString());
+		if(CivilCraft.debug == true) for(UUID id : permPlayers.keySet()) p.sendMessage(id.toString());
 	}
 	
 	public static void refreshGroupData(PermGroup group) {
@@ -114,7 +115,7 @@ public class PermissionManager {
 		if(bypass == false) bypass = sender.hasPermission(PermissionList.getPermission(command));
 		if(bypass == false && PermissionList.knowsOpPermission(command)) bypass = sender.hasPermission(PermissionList.getOpPermission(command));
 		if(bypass == false) bypass = sender.hasPermission("*");
-		if(bypass == false == true) CivilCraft.sendInfo(sender, "", "§cDu hast nicht das Recht dazu");
+		if(bypass == false == true) CivilCraft.sendInfo(sender, "", FileManager.no_permission);
 		return bypass;
 	}
 	public static boolean hasPermission(CommandSender sender, String command, boolean sendError) {
@@ -123,7 +124,7 @@ public class PermissionManager {
 		if(bypass == false) bypass = sender.hasPermission(PermissionList.getPermission(command));
 		if(bypass == false && PermissionList.knowsOpPermission(command)) bypass = sender.hasPermission(PermissionList.getOpPermission(command));
 		if(bypass == false) bypass = sender.hasPermission("*");
-		if(bypass == false && sendError == true) CivilCraft.sendInfo(sender, "", "§cDu hast nicht das Recht dazu");
+		if(bypass == false && sendError == true) CivilCraft.sendInfo(sender, "", FileManager.no_permission);
 		return bypass;
 	}
 

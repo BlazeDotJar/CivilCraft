@@ -37,7 +37,7 @@ public class GlobalMuteCommand implements CommandExecutor {
 				if(cmd.getName().equalsIgnoreCase("mute") && PermissionManager.hasPermission(sender, "mute")) {
 					UUID uuid = PlayerAtlas.getUUIDbyName(args[0]);
 					if(uuid != null) {
-						if(args[0].equals(sender.getName())) {CivilCraft.sendInfo(sender, "", "lol.", "Du wolltest dich gerade selbst muten"); return false;}
+						if(args[0].equals(sender.getName())) {CivilCraft.sendInfo(sender, "", "lol", "Du wolltest dich gerade selbst muten"); return false;}
 						if(ProfileManager.getProfile(uuid).mute()) CivilCraft.sendInfo(sender, "", "§aDu hast §f"+args[0]+" §aden Mund zugenäht");
 						else CivilCraft.sendInfo(sender, "", "§f"+args[0]+" §akann nun wieder reden");
 					} else CivilCraft.sendErrorInfo(sender, "", FileManager.player_not_found);

@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -26,11 +27,13 @@ import me.ichmagomaskekse.de.filesystem.FileManager;
 import me.ichmagomaskekse.de.listener.BlockBreakListener;
 import me.ichmagomaskekse.de.listener.ChatListener;
 import me.ichmagomaskekse.de.listener.DamageListener;
-import me.ichmagomaskekse.de.listener.PermListener;
+import me.ichmagomaskekse.de.listener.GeldEinzahlListener;
+import me.ichmagomaskekse.de.listener.PlayerRespawnListener;
 import me.ichmagomaskekse.de.listener.ServerJoinAndLeaveListener;
 import me.ichmagomaskekse.de.lobby.Lobby;
 import me.ichmagomaskekse.de.permissions.PermissionList;
 import me.ichmagomaskekse.de.permissions.PermissionManager;
+import me.ichmagomaskekse.de.permissions.listener.PermListener;
 import me.ichmagomaskekse.de.scoreboard.CScoreboard;
 import me.ichmagomaskekse.de.scoreboard.CTablist;
 import me.ichmagomaskekse.de.stats.CStats;
@@ -42,6 +45,7 @@ public class CivilCraft extends JavaPlugin {
 	private static CivilCraft ccraft = null;
 	public static CivilCraft getInstance() { return ccraft; }
 	public static boolean global_mute = false;
+	public static boolean debug = false;
 	
 	//Instanzen: Manager, Handler, etc
 	public FileManager filemanager = null;
@@ -80,8 +84,8 @@ public class CivilCraft extends JavaPlugin {
 		File groups = new File("plugins/CivilCraft/Permissions/groups.yml");
 		File players = new File("plugins/CivilCraft/Permissions/players.yml");
 										saveResource("civilcraft.yml", false);
-		if(groups.exists() == false)	saveResource("Permissions/groups.yml", false);
-		if(players.exists() == false)	saveResource("Permissions/players.yml", false);
+		if(groups.exists() == false)	saveResource("Permissions/groups.yml", true);
+		if(players.exists() == false)	saveResource("Permissions/players.yml", true);
 										saveResource("player_atlas.yml", false);
 										saveResource("Teleportation/spawn.yml", false);
 	}
@@ -99,6 +103,9 @@ public class CivilCraft extends JavaPlugin {
 		command_spawn = new SpawnCommand();
 	}
 	public void postInit() {
+		//Spieler Daten im Atlas speichern
+		PlayerAtlas.registerOnlinePlayers();
+		
 		//Events
 		new ServerJoinAndLeaveListener();
 		new ChatListener();
@@ -106,6 +113,8 @@ public class CivilCraft extends JavaPlugin {
 		new DamageListener();
 		new PermListener();
 		new StatListener();
+		new PlayerRespawnListener();
+		new GeldEinzahlListener();
 		
 		//Commands
 		getCommand("backup").setExecutor(new BackupCommand());
@@ -232,6 +241,10 @@ public class CivilCraft extends JavaPlugin {
 		Date date = new Date(System.currentTimeMillis());
 		
 		return formatter.format(date);
+	}
+	
+	public Location getSpawnLocation() {
+		return command_spawn.getSpawnLocation();
 	}
 
 	

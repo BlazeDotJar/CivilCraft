@@ -1,4 +1,4 @@
-package me.ichmagomaskekse.de.listener;
+package me.ichmagomaskekse.de.permissions.listener;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;

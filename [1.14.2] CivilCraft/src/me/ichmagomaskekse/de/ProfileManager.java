@@ -29,6 +29,7 @@ public class ProfileManager {
 		if(profiles.containsKey(p.getUniqueId()) == false) profiles.put(p.getUniqueId(), new PlayerProfile(p));
 	}
 	public static PlayerProfile getProfile(Player p) {
+		if(profiles.containsKey(p.getUniqueId()) == false) registerProfiles(); 
 		return getProfile(p.getUniqueId());
 	}
 	public static PlayerProfile getProfile(UUID uuid) {
@@ -98,21 +99,22 @@ public class ProfileManager {
 		public void loadData() {
 			File file = new File(profile_path);
 			FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-			if(file.exists()) {				
-				String world = cfg.getString(uuid.toString()+".last location.World");
-				double x = cfg.getDouble(uuid.toString()+".last location.X");
-				double y = cfg.getDouble(uuid.toString()+".last location.Y");
-				double z = cfg.getDouble(uuid.toString()+".last location.Z");
-				float yaw =   (float)cfg.getInt(uuid.toString()+".last location.Yaw");
-				float pitch = (float) cfg.getInt(uuid.toString()+".last location.Pitch");
-				
-				this.chat_mute = cfg.getBoolean(uuid.toString()+".chat mute");
-				this.allow_fly = cfg.getBoolean(uuid.toString()+".allow fly");
-				this.godmode = cfg.getBoolean(uuid.toString()+".godmode");
-				this.last_location = new Location(Bukkit.getWorld(world),x,y,z,yaw,pitch);
-				this.last_location = player.getLocation();
-				this.current_gamemode = GameMode.valueOf(cfg.getString(uuid.toString()+".current gamemode"));
-			}else saveData();
+			if(file.exists() == false) saveData();
+			
+			String world = cfg.getString(uuid.toString()+".last location.World");
+			if(world == null) return;
+			double x = cfg.getDouble(uuid.toString()+".last location.X");
+			double y = cfg.getDouble(uuid.toString()+".last location.Y");
+			double z = cfg.getDouble(uuid.toString()+".last location.Z");
+			float yaw =   (float)cfg.getInt(uuid.toString()+".last location.Yaw");
+			float pitch = (float) cfg.getInt(uuid.toString()+".last location.Pitch");
+			
+			this.chat_mute = cfg.getBoolean(uuid.toString()+".chat mute");
+			this.allow_fly = cfg.getBoolean(uuid.toString()+".allow fly");
+			this.godmode = cfg.getBoolean(uuid.toString()+".godmode");
+			this.last_location = new Location(Bukkit.getWorld(world),x,y,z,yaw,pitch);
+			this.last_location = player.getLocation();
+			this.current_gamemode = GameMode.valueOf(cfg.getString(uuid.toString()+".current gamemode"));
 			
 			isLoaded = true;
 		}

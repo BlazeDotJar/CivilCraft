@@ -19,6 +19,7 @@ public class FileManager {
 	public static String MOTD = "MOTD NOT LOADED";
 	public static String join_message = "§7{USER} §ahat das Spiel betreten";
 	public static String leave_message = "§7{USER} §chat das Spiel verlassen";
+	public static String no_permission = "§cDu hast kein Recht dazu!";
 	public static int server_slots = 1;
 	
 	//SYSTEM
@@ -46,6 +47,7 @@ public class FileManager {
 		FileManager.MOTD = cfg.getString("Misc.MOTD").replace("&", "§").replace("%n", "\n");
 		FileManager.join_message = cfg.getString("Lobby.join message").replace("&", "§");
 		FileManager.leave_message = cfg.getString("Lobby.leave message").replace("&", "§");
+		FileManager.no_permission = cfg.getString("Misc.no permission").replace("&", "§");
 		FileManager.server_slots = cfg.getInt("Misc.server slots");
 		
 		//SYSTEM

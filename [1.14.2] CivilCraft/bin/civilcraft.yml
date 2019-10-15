@@ -15,3 +15,4 @@ Misc:
   MOTD: '&6CivilCraft &f1.14.2%n&aSpiele &lJETZT &aCitybuild, PVP und mehr!'
   server prefix: '&6CivilCraft'
   server slots: 100
+  no permission: '&cDu hast kein Recht dazu!'
